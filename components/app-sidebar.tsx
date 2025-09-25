@@ -6,11 +6,6 @@ import { LayoutDashboard, PlusCircle, TableOfContents } from "lucide-react";
 import { Button } from "./ui/button";
 
 const data = {
-    user: {
-        name: "Thyerri Mezzari",
-        email: "thyerrimezzari@hotmail.com",
-        avatar: "https://avatars.githubusercontent.com/u/13538408?v=4",
-    },
     NavMain: [
         {
             title: "Home",

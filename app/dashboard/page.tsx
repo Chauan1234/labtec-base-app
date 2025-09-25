@@ -1,12 +1,16 @@
 "use client";
+import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import {
     SidebarInset,
     SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { useAuth } from '@/contexts/AuthContext';
+import { AvatarFallback } from '@radix-ui/react-avatar';
+import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
 import { Ellipsis, Pencil, Trash2 } from 'lucide-react'
 
 const groups = [
@@ -34,6 +38,9 @@ const groups = [
 
 
 export default function Page() {
+    const { email, username, firstName, lastName, logout } = useAuth();
+    console.log({ email, firstName, lastName, username });
+
     return (
         <>
             <SidebarInset>
@@ -87,6 +94,34 @@ export default function Page() {
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Avatar>
+                                    <AvatarFallback>
+                                        {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : username?.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent side="bottom" align="end">
+                                <DropdownMenuLabel className='flex items-center gap-2'>
+                                    <Avatar>
+                                        <AvatarFallback>
+                                            {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : username?.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className='flex flex-col'>
+                                        <span>{username}</span>
+                                        <span className="text-xs text-muted-foreground">{email}</span>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </header>
             </SidebarInset>
