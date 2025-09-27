@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState } from "react";
 
 type Group = {
-  id: number;
+  value: string;
   name: string;
   role: string;
 };

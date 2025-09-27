@@ -1,5 +1,6 @@
-import { LucideIcon, Sidebar } from "lucide-react"
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
+// UI
+import { LucideIcon } from "lucide-react";
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
 export function NavMain({
     items,

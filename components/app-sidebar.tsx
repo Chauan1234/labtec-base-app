@@ -1,15 +1,28 @@
 "use client";
 
+// React
+import React from "react";
 import { useEffect } from "react";
-import { title } from "process";
+
+// Assets
 import LogoLabtec from "../public/logo-labtec.png";
+import LogoLabtecSemTexto from "../public/logo-labtec-sem-texto.png";
+
+// Components
 import { NavMain } from "./nav-main";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton } from "./ui/sidebar";
-import { Ellipsis, LayoutDashboard, Pencil, PlusCircle, TableOfContents, Trash2 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+
+// Contexts e Hooks
+import { cn } from "@/lib/utils";
 import { useGroup, Group } from "@/contexts/GroupContext";
+import { useSidebar } from "@/components/ui/sidebar";
+
+// UI
+import { Button } from "./ui/button";
+import { CheckIcon, ChevronsUpDown, LayoutDashboard, TableOfContents } from "lucide-react";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton } from "./ui/sidebar";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "./ui/command";
 
 const data = {
     NavMain: [
@@ -26,22 +39,22 @@ const data = {
     ],
     groups: [
         {
-            id: 1,
+            value: "edumind",
             name: "Edumind",
             role: "Admin",
         },
         {
-            id: 2,
+            value: "eletric-games",
             name: "Eletric Games",
             role: "Member",
         },
         {
-            id: 3,
+            value: "labtec-one",
             name: "Labtec One",
             role: "Member",
         },
         {
-            id: 4,
+            value: "base-app",
             name: "BaseApp",
             role: "Admin",
         },
@@ -49,6 +62,8 @@ const data = {
 };
 
 export default function AppSidebar() {
+    const [open, setOpen] = React.useState(false)
+    const [value, setValue] = React.useState("")
     const { selectedGroup, setSelectedGroup } = useGroup();
 
     // seta o grupo inicial baseado no defaultValue do select
@@ -60,42 +75,90 @@ export default function AppSidebar() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const { state } = useSidebar();
+
     return (
-        <Sidebar variant="inset">
+        <Sidebar variant="inset" collapsible="icon">
             <SidebarHeader>
+
+                {/* Logo */}
                 <SidebarMenu>
                     <SidebarMenuButton asChild className="transition-all duration-200">
                         <a href="#" className="h-auto w-auto">
-                            <img src={LogoLabtec.src} alt="Logo Labtec" width={90} />
+                            {state === "collapsed" ? (
+                                <img src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} />
+                            ) : (
+                                <img src={LogoLabtec.src} alt="Logo Labtec" width={90} />
+                            )}
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenu>
+
+                {/* Select Group */}
                 <SidebarMenu>
-                    <Select defaultValue={data.groups[0].name} onValueChange={(val) => {
-                        const g = data.groups.find((gr) => gr.name === val) ?? null;
-                        setSelectedGroup(g as Group | null);
-                    }}>
-                        <SelectTrigger className="w-[180px] bg-muted cursor-pointer" size="sm">
-                            <SelectValue placeholder="Selecione um Grupo" />
-                        </SelectTrigger>
-                        <SelectContent position="popper">
-                            <Button className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer" variant="outline">
-                                Novo Grupo
+                    <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger
+                            asChild
+                            className="w-auto">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                role="combobox"
+                                aria-expanded={open}
+                                className={cn("p-0 text-sm font-medium bg-muted justify-between cursor-pointer hover:bg-muted/50",
+                                    state === "collapsed" && "w-8 h-8 flex items-center justify-center rounded-md"
+                                )}
+                                aria-label="Selecionar grupo"
+                            >
+                                {state === "collapsed" ? (
+                                    <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                                ) : (
+                                    <>
+                                        {value ? value : (selectedGroup ? selectedGroup.name : <span>Selecionar Grupo</span>)}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </>
+                                )}
                             </Button>
-                            <SelectGroup>
-                                <SelectLabel>Grupos</SelectLabel>
-                                {data.groups.map((group) => (
-                                    <SelectItem
-                                        key={group.id}
-                                        value={group.name}
-                                        className='focus:bg-muted/80 cursor-pointer'
-                                    >
-                                        {group.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[210px] p-0" align="start">
+                            <Command>
+                                <CommandInput
+                                    placeholder="Procurar grupo..."
+                                />
+                                <CommandList>
+                                    <CommandEmpty>Nenhum grupo encontrado</CommandEmpty>
+                                    <CommandGroup>
+                                        <CommandItem className="!bg-transparent p-0 pt-1">
+                                            <Button className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer hover:bg-secondary/10 hover:text-secondary" variant="outline">
+                                                <span>Novo Grupo</span>
+                                            </Button>
+                                        </CommandItem>
+                                    </CommandGroup>
+                                    <CommandSeparator className="my-1" />
+                                    <CommandGroup>
+                                        {data.groups.map((group) => (
+                                            <CommandItem
+                                                key={group.value}
+                                                onSelect={() => {
+                                                    setSelectedGroup(group);
+                                                    setOpen(false);
+                                                }}
+                                                className="justify-between cursor-pointer hover:!bg-secondary/10 hover:!text-secondary focus:!bg-secondary/10 focus:!text-secondary"
+                                            >
+                                                {group.name}
+                                                <CheckIcon
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4 hover:text-secondary",
+                                                        group.value === selectedGroup?.value ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>

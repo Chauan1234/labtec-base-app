@@ -1,16 +1,23 @@
 "use client";
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import {
-    SidebarInset,
-    SidebarTrigger,
-} from '@/components/ui/sidebar'
+
+// Contexts
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroup } from '@/contexts/GroupContext';
-import { Ellipsis, EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog, UserRoundPlus } from 'lucide-react';
+
+// UI
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar';
+import { EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 
 export default function Page() {
@@ -20,10 +27,13 @@ export default function Page() {
 
     return (
         <>
+            {/* Criação da page arredondada */}
             <SidebarInset>
-                <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-                    <div className="flex items-center gap-2 px-2">
-                        <SidebarTrigger className="-ml-1 cursor-pointer" />
+
+                {/* Header */}
+                <header className="flex h-12 shrink-0 items-center gap-2 border-b px-6">
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="cursor-pointer" />
                         <Separator
                             orientation="vertical"
                             className="mr-2 data-[orientation=vertical]:h-4"
@@ -47,7 +57,7 @@ export default function Page() {
                             <DropdownMenuContent side="bottom">
                                 <DropdownMenuLabel className='text-xs text-muted-foreground text-center font-medium'>Gerenciar grupo</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                
+
                                 <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
                                     <UserRoundCog className='focus:text-secondary' />
                                     Gerenciar membros
@@ -64,7 +74,7 @@ export default function Page() {
                                     <Trash2 className='focus:text-destructive' />
                                     Excluir grupo
                                 </DropdownMenuItem>
-                                
+
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
