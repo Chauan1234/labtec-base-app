@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar';
-import { EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog } from 'lucide-react';
+import { CircleAlert, EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -119,26 +119,30 @@ export default function Page() {
                     </div>
                     {/* Dialog controlado para Logout (fora do Dropdown) */}
                     <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                        <DialogContent className='gap-0'>
-                            <DialogHeader className='mb-3 gap-1'>
-                                <DialogTitle>
-                                    <span>Tem certeza que deseja sair?</span>
+                        <DialogContent className='gap-0 sm:max-w-[284px]'>
+                            <DialogHeader className='flex items-center mb-3 gap-1'>
+                                <DialogTitle className='flex flex-col items-center gap-1'>
+                                    <CircleAlert className='h-5 w-5 text-destructive' />
+                                    <span>Sair da sua conta?</span>
                                 </DialogTitle>
-                                <DialogDescription>
-                                    A sessão atual será encerrada e todas as janelas e abas serão fechadas.
+                                <DialogDescription className='text-center text-sm text-muted-foreground mt-1 mb-3'>
+                                    Será necessário fazer login de novo para acessar seus grupos.
                                 </DialogDescription>
                             </DialogHeader>
                             <Button
-                                variant="outline"
-                                className='hover:bg-destructive/10 hover:text-destructive cursor-pointer'
+                                variant="logout"
+                                size={"sm"}
+                                className='mb-2 cursor-pointer'
                                 onClick={logout}
                             >
                                 Sair
                             </Button>
-                            <span className='text-center text-sm font-normal p-0 my-1'>ou</span>
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button variant="outline" className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>Cancelar</Button>
+                                    <Button 
+                                    variant="outline"
+                                    size={"sm"}
+                                    className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>Cancelar</Button>
                                 </DialogClose>
                             </DialogFooter>
                         </DialogContent>
