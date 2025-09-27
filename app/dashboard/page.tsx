@@ -1,7 +1,7 @@
 "use client";
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -9,36 +9,13 @@ import {
     SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/contexts/AuthContext';
-import { AvatarFallback } from '@radix-ui/react-avatar';
-import { DropdownMenuLabel } from '@radix-ui/react-dropdown-menu';
-import { Ellipsis, Pencil, Trash2 } from 'lucide-react'
-
-const groups = [
-    {
-        id: 1,
-        name: "Edumind",
-        role: "Admin",
-    },
-    {
-        id: 2,
-        name: "Eletric Games",
-        role: "Member",
-    },
-    {
-        id: 3,
-        name: "Labtec One",
-        role: "Member",
-    },
-    {
-        id: 4,
-        name: "BaseApp",
-        role: "Admin",
-    },
-]
+import { useGroup } from '@/contexts/GroupContext';
+import { Ellipsis, EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog, UserRoundPlus } from 'lucide-react';
 
 
 export default function Page() {
     const { email, username, firstName, lastName, logout } = useAuth();
+    const { selectedGroup } = useGroup();
     console.log({ email, firstName, lastName, username });
 
     return (
@@ -51,54 +28,50 @@ export default function Page() {
                             orientation="vertical"
                             className="mr-2 data-[orientation=vertical]:h-4"
                         />
-                        <Select>
-                            <SelectTrigger className="w-[180px]" size="sm">
-                                <SelectValue placeholder="Selecione um Grupo" />
-                            </SelectTrigger>
-                            <SelectContent position="popper">
-                                <Button className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer" variant="outline">
-                                    Novo Grupo
-                                </Button>
-                                <SelectGroup>
-                                    <SelectLabel>Grupos</SelectLabel>
-                                    {groups.map((group) => (
-                                        <SelectItem
-                                            key={group.id}
-                                            value={group.name}
-                                            className='focus:bg-muted/80'
-                                            trailing={
-                                                group.role === "Admin" ? (
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger>
-                                                            <button onClick={(e) => e.stopPropagation()} className='p-1 rounded-md cursor-pointer hover:bg-muted-foreground/10'>
-                                                                <Ellipsis />
-                                                            </button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent side='right' align='start'>
-                                                            <DropdownMenuItem className='focus:bg-secondary/10 focus:text-secondary hover:cursor-pointer'>
-                                                                <Pencil className='hover:text-secondary' />
-                                                                <span>Editar</span>
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className='focus:bg-destructive/10 focus:text-destructive hover:cursor-pointer'>
-                                                                <Trash2 className='hover:text-destructive' />
-                                                                <span>Deletar</span>
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                ) : undefined
-                                            }
-                                        >
-                                            {group.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div>
                         <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <Avatar>
+                                {selectedGroup ? (
+                                    <Button variant="ghost" size="sm" className="!p-0 cursor-pointer hover:text-secondary hover:bg-muted/50">
+                                        <span className='text-sm font-medium ml-2'>{selectedGroup.name}</span>
+
+                                        {selectedGroup.role == "Admin" ? (
+                                            <EllipsisVertical className='inline-block ml-1 mr-1 cursor-pointer' size={14} />
+                                        ) :
+                                            null
+                                        }
+                                    </Button>
+                                ) : (
+                                    <div className="text-sm text-muted-foreground">Nenhum grupo selecionado</div>
+                                )}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent side="bottom">
+                                <DropdownMenuLabel className='text-xs text-muted-foreground text-center font-medium'>Gerenciar grupo</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                
+                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
+                                    <UserRoundCog className='focus:text-secondary' />
+                                    Gerenciar membros
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
+                                    <Pencil className='focus:text-secondary' />
+                                    Renomear
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
+                                    <Settings className='focus:text-secondary' />
+                                    Configurações
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className='cursor-pointer focus:bg-destructive/10 focus:text-destructive'>
+                                    <Trash2 className='focus:text-destructive' />
+                                    Excluir grupo
+                                </DropdownMenuItem>
+                                
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <div className='flex flex-1 items-center justify-end'>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Avatar className='cursor-pointer'>
                                     <AvatarFallback>
                                         {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : username?.charAt(0)}
                                     </AvatarFallback>
@@ -112,13 +85,18 @@ export default function Page() {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className='flex flex-col'>
-                                        <span>{username}</span>
-                                        <span className="text-xs text-muted-foreground">{email}</span>
+                                        <span className='text-sm font-medium'>{username}</span>
+                                        <span className="text-xs font-normal text-muted-foreground">{email}</span>
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-
+                                <DropdownMenuItem className='focus:bg-secondary/10 focus:text-secondary cursor-pointer'>
+                                    <Settings className='focus:text-secondary' />
+                                    Configurações
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={logout} className='focus:bg-destructive/10 focus:text-destructive cursor-pointer'>
+                                    <LogOut className='focus:text-destructive' />
+                                    Sair
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

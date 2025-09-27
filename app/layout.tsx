@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AppSidebar from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { GroupProvider } from "@/contexts/GroupContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,8 +34,10 @@ export default function RootLayout({
         <AuthProvider>
           {
             <SidebarProvider>
-              <AppSidebar />
-              {children}
+              <GroupProvider>
+                <AppSidebar />
+                {children}
+              </GroupProvider>
             </SidebarProvider>
           }
         </AuthProvider>
