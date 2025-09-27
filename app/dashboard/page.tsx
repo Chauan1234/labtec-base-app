@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 // Contexts
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroup } from '@/contexts/GroupContext';
@@ -18,11 +19,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 
 export default function Page() {
     const { email, username, firstName, lastName, logout } = useAuth();
     const { selectedGroup } = useGroup();
+    const [confirmOpen, setConfirmOpen] = React.useState(false);
     console.log({ email, firstName, lastName, username });
 
     return (
@@ -104,13 +107,42 @@ export default function Page() {
                                     <Settings className='focus:text-secondary' />
                                     Configurações
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={logout} className='focus:bg-destructive/10 focus:text-destructive cursor-pointer'>
+                                <DropdownMenuItem
+                                    className='focus:bg-destructive/10 focus:text-destructive cursor-pointer'
+                                    onSelect={() => setConfirmOpen(true)}
+                                >
                                     <LogOut className='focus:text-destructive' />
                                     Sair
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+                    {/* Dialog controlado para Logout (fora do Dropdown) */}
+                    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                        <DialogContent className='gap-0'>
+                            <DialogHeader className='mb-3 gap-1'>
+                                <DialogTitle>
+                                    <span>Tem certeza que deseja sair?</span>
+                                </DialogTitle>
+                                <DialogDescription>
+                                    A sessão atual será encerrada e todas as janelas e abas serão fechadas.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <Button
+                                variant="outline"
+                                className='hover:bg-destructive/10 hover:text-destructive cursor-pointer'
+                                onClick={logout}
+                            >
+                                Sair
+                            </Button>
+                            <span className='text-center text-sm font-normal p-0 my-1'>ou</span>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline" className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>Cancelar</Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </header>
             </SidebarInset>
         </>
