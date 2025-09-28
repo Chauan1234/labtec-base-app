@@ -99,7 +99,9 @@ export default function AppSidebar() {
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger
                             asChild
-                            className="w-auto">
+                            className="w-auto"
+                            tooltip={cn(selectedGroup ? selectedGroup.name : "Selecionar grupo")}
+                        >
                             <Button
                                 variant="outline"
                                 size="sm"

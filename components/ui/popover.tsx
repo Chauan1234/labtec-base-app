@@ -4,6 +4,8 @@ import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import { useSidebar } from "./sidebar"
 
 function Popover({
   ...props
@@ -12,9 +14,33 @@ function Popover({
 }
 
 function PopoverTrigger({
+  tooltip,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+}: React.ComponentProps<typeof PopoverPrimitive.Trigger> & {
+  tooltip?: string | React.ReactNode | React.ComponentProps<typeof TooltipContent>
+}) {
+  const { isMobile, state } = useSidebar()
+  
+  const trigger = (
+    <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+  )
+
+  if (!tooltip) return trigger
+
+  const tooltipProps =
+    typeof tooltip === "string" ? { children: tooltip } : (tooltip as React.ComponentProps<typeof TooltipContent>)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltipProps} 
+        />
+    </Tooltip>
+  )
 }
 
 function PopoverContent({
