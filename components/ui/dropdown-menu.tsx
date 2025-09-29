@@ -5,6 +5,8 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import { useSidebar } from "./sidebar"
 
 function DropdownMenu({
   ...props
@@ -21,13 +23,32 @@ function DropdownMenuPortal({
 }
 
 function DropdownMenuTrigger({
+  tooltip,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger> & {
+  tooltip?: string | React.ReactNode | React.ComponentProps<typeof TooltipContent>
+}) {
+  const { isMobile, state } = useSidebar()
+
+  const trigger = (
+    <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
+  )
+
+  if (!tooltip) return trigger
+
+  const tooltipProps =
+    typeof tooltip === "string" ? { children: tooltip } : (tooltip as React.ComponentProps<typeof TooltipContent>)
+
   return (
-    <DropdownMenuPrimitive.Trigger
-      data-slot="dropdown-menu-trigger"
-      {...props}
-    />
+    <Tooltip>
+      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltipProps}
+      />
+    </Tooltip>
   )
 }
 

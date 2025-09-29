@@ -1,6 +1,8 @@
 "use client";
 
+// React
 import React from 'react';
+
 // Contexts
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroup } from '@/contexts/GroupContext';
@@ -10,7 +12,8 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar';
-import { CircleAlert, EllipsisVertical, LogOut, Pencil, Settings, Trash2, UserRoundCog } from 'lucide-react';
+import { CircleAlert, LogOut, Settings } from 'lucide-react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,7 +31,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 
 export default function Page() {
@@ -60,7 +62,8 @@ export default function Page() {
                                     <BreadcrumbLink
                                         href="/dashboard"
                                         className='hover:underline'
-                                    >Dashboard
+                                    >
+                                        Dashboard
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
