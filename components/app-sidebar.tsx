@@ -18,11 +18,20 @@ import { useSidebar } from "@/components/ui/sidebar";
 
 // UI
 import { Button } from "./ui/button";
-import { CheckIcon, ChevronsUpDown, LayoutDashboard, TableOfContents } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { CheckIcon, ChevronsUpDown, EllipsisVertical, LayoutDashboard, Pencil, Settings, TableOfContents, Trash2, UserRoundCog } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton } from "./ui/sidebar";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "./ui/command";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+} from "./ui/command";
 
 const data = {
     NavMain: [
@@ -95,34 +104,45 @@ export default function AppSidebar() {
                 </SidebarMenu>
 
                 {/* Select Group */}
-                <SidebarMenu>
+                <SidebarMenu className={cn("flex items-center gap-1 min-w-0",
+                    state === 'collapsed'
+                        ? "flex-col"
+                        : "flex-row"
+                )}>
                     <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger
-                            asChild
-                            className="w-auto"
-                            tooltip={cn(selectedGroup ? selectedGroup.name : "Selecionar grupo")}
-                        >
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                role="combobox"
-                                aria-expanded={open}
-                                className={cn("p-0 text-sm font-medium bg-muted justify-between cursor-pointer hover:bg-muted/50",
-                                    state === "collapsed" && "w-8 h-8 flex items-center justify-center rounded-md"
-                                )}
-                                aria-label="Selecionar grupo"
-                            >
-                                {state === "collapsed" ? (
-                                    <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-                                ) : (
-                                    <>
-                                        {value ? value : (selectedGroup ? selectedGroup.name : <span>Selecionar Grupo</span>)}
-                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                    </>
-                                )}
-                            </Button>
+                        {/* asChild agora envolve um wrapper div que controla o flex */}
+                        <PopoverTrigger asChild>
+                            {/* wrapper controla o tamanho e min-w-0 para truncar corretamente quando necessário */}
+                            <div className={cn(state === "collapsed" ? "w-auto" : "flex-1 min-w-0")}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    role="combobox"
+                                    aria-expanded={open}
+                                    // botão preenche o wrapper apenas no modo expandido
+                                    className={cn("p-0 text-sm font-medium justify-center cursor-pointer hover:bg-secondary/10 hover:text-primary",
+                                        state === "collapsed"
+                                            ? "justify-center w-8 h-8 flex items-center rounded-md"
+                                            : "justify-between w-full",
+                                    )}
+                                    aria-label="Selecionar grupo"
+                                    title={selectedGroup ? selectedGroup.name : "Selecionar grupo"}
+                                >
+                                    {state === "collapsed" ? (
+                                        <ChevronsUpDown className="h-4 w-4 shrink-0" />
+                                    ) : (
+                                        <>
+                                            {value ? value : (selectedGroup ? selectedGroup.name : <span>Selecionar Grupo</span>)}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[210px] p-0" align="start">
+                        <PopoverContent
+                            side={state === 'collapsed' ? "right" : "bottom"}
+                            align="start"
+                            className="w-[210px] p-0">
                             <Command>
                                 <CommandInput
                                     placeholder="Procurar grupo..."
@@ -131,12 +151,15 @@ export default function AppSidebar() {
                                     <CommandEmpty>Nenhum grupo encontrado</CommandEmpty>
                                     <CommandGroup>
                                         <CommandItem className="!bg-transparent p-0 pt-1">
-                                            <Button className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer hover:bg-secondary/10 hover:text-secondary" variant="outline">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer hover:bg-secondary/20 hover:text-primary"
+                                            >
                                                 <span>Novo Grupo</span>
                                             </Button>
                                         </CommandItem>
                                     </CommandGroup>
-                                    <CommandSeparator className="my-1" />
+                                    <CommandSeparator className="my-1 mx-2" />
                                     <CommandGroup>
                                         {data.groups.map((group) => (
                                             <CommandItem
@@ -145,12 +168,12 @@ export default function AppSidebar() {
                                                     setSelectedGroup(group);
                                                     setOpen(false);
                                                 }}
-                                                className="justify-between cursor-pointer hover:!bg-secondary/10 hover:!text-secondary focus:!bg-secondary/10 focus:!text-secondary"
+                                                className="justify-between cursor-pointer hover:font-medium"
                                             >
                                                 {group.name}
                                                 <CheckIcon
                                                     className={cn(
-                                                        "mr-2 h-4 w-4 hover:text-secondary",
+                                                        "mr-2 h-4 w-4 hover:text-primary",
                                                         group.value === selectedGroup?.value ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
@@ -161,6 +184,66 @@ export default function AppSidebar() {
                             </Command>
                         </PopoverContent>
                     </Popover>
+
+                    <DropdownMenu>
+                        {/* DropdownTrigger permanece como elemento não-flex para não ser empurrado */}
+                        <DropdownMenuTrigger asChild>
+                            <div className="flex-none">
+                                <Button
+                                    variant={"outline"}
+                                    size={"sm"}
+                                    className={cn("p-0 w-8 h-8 cursor-pointer hover:bg-secondary/10 hover:text-primary",
+                                        state === "collapsed" ? "flex items-center justify-center rounded-md" : ""
+                                    )}
+                                >
+                                    <EllipsisVertical className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                            side="right"
+                            align="start"
+                        >
+                            <DropdownMenuLabel
+                                className="text-xs text-muted-foreground text-center font-medium"
+                            >
+                                Gerenciar grupo
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {selectedGroup && selectedGroup.role === "Admin" ? (
+                                <>
+                                    <DropdownMenuItem className='cursor-pointer focus:bg-secondary/20 focus:text-primary'>
+                                        <UserRoundCog className='focus:text-primary' />
+                                        Gerenciar membros
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className='cursor-pointer focus:bg-secondary/20 focus:text-primary'>
+                                        <Pencil className='focus:text-primary' />
+                                        Renomear
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className='cursor-pointer focus:bg-secondary/20 focus:text-primary'>
+                                        <Settings className='focus:text-primary' />
+                                        Configurações
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className='cursor-pointer focus:bg-destructive/10 focus:text-destructive'>
+                                        <Trash2 className='focus:text-destructive' />
+                                        Excluir grupo
+                                    </DropdownMenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem className="cursor-pointer focus:bg-secondary/10 focus:text-primary">
+                                        <Settings className="focus:text-primary" />
+                                        Configurações
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem className="cursor-pointer focus:bg-destructive/10 focus:text-destructive">
+                                        <Trash2 className="focus:text-destructive" />
+                                        Sair do grupo
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>

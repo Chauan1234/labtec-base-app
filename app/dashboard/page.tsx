@@ -19,7 +19,16 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 
 export default function Page() {
@@ -36,50 +45,26 @@ export default function Page() {
                 {/* Header */}
                 <header className="flex h-12 shrink-0 items-center gap-2 border-b px-6">
                     <div className="flex items-center gap-2">
-                        <SidebarTrigger className="cursor-pointer" />
+                        <SidebarTrigger className="cursor-pointer hover:bg-secondary/20 hover:text-primary" />
                         <Separator
                             orientation="vertical"
                             className="mr-2 data-[orientation=vertical]:h-4"
                         />
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                {selectedGroup ? (
-                                    <Button variant="ghost" size="sm" className="!p-0 cursor-pointer hover:text-secondary hover:bg-muted/50">
-                                        <span className='text-sm font-medium ml-2'>{selectedGroup.name}</span>
-
-                                        {selectedGroup.role == "Admin" ? (
-                                            <EllipsisVertical className='inline-block ml-1 mr-1 cursor-pointer' size={14} />
-                                        ) :
-                                            null
-                                        }
-                                    </Button>
-                                ) : (
-                                    <div className="text-sm text-muted-foreground">Nenhum grupo selecionado</div>
-                                )}
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent side="bottom">
-                                <DropdownMenuLabel className='text-xs text-muted-foreground text-center font-medium'>Gerenciar grupo</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-
-                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
-                                    <UserRoundCog className='focus:text-secondary' />
-                                    Gerenciar membros
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
-                                    <Pencil className='focus:text-secondary' />
-                                    Renomear
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer focus:bg-secondary/10 focus:text-secondary'>
-                                    <Settings className='focus:text-secondary' />
-                                    Configurações
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer focus:bg-destructive/10 focus:text-destructive'>
-                                    <Trash2 className='focus:text-destructive' />
-                                    Excluir grupo
-                                </DropdownMenuItem>
-
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    {selectedGroup ? selectedGroup.name : "Nenhum grupo selecionado"}
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink
+                                        href="/dashboard"
+                                        className='hover:underline'
+                                    >Dashboard
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
                     </div>
                     <div className='flex flex-1 items-center justify-end'>
                         <DropdownMenu>
@@ -103,8 +88,8 @@ export default function Page() {
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className='focus:bg-secondary/10 focus:text-secondary cursor-pointer'>
-                                    <Settings className='focus:text-secondary' />
+                                <DropdownMenuItem className='focus:bg-secondary/20 focus:text-primary cursor-pointer'>
+                                    <Settings className='focus:text-primary' />
                                     Configurações
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
@@ -139,10 +124,10 @@ export default function Page() {
                             </Button>
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button 
-                                    variant="outline"
-                                    size={"sm"}
-                                    className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>Cancelar</Button>
+                                    <Button
+                                        variant="outline"
+                                        size={"sm"}
+                                        className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>Cancelar</Button>
                                 </DialogClose>
                             </DialogFooter>
                         </DialogContent>
