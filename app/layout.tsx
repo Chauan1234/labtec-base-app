@@ -2,14 +2,16 @@
 import { AuthProvider } from "@/contexts/AuthContext";
 import { GroupProvider } from "@/contexts/GroupContext";
 
+// Components
+import AppHeader from "@/components/layout/header/header";
+import AppSidebar from "@/components/layout/sidebar/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
 // Styles and Metadata
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-// Components
-import AppSidebar from "@/components/sidebar/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 // Fonts
 const geistSans = Geist({
@@ -46,8 +48,13 @@ export default function RootLayout({
 
                 {/* Group Sidebar */}
                 <AppSidebar />
-                {children}
-                
+                <SidebarInset>
+                  <AppHeader />
+                  <div className="h-full p-4">
+                    {children}
+                  </div>
+                </SidebarInset>
+
               </GroupProvider>
             </SidebarProvider>
           }

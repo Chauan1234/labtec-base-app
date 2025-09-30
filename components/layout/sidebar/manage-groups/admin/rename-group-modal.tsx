@@ -1,16 +1,19 @@
+// React
+import React from 'react';
+
+// UI Components
+import { Button } from '../../../../ui/button';
+import { CircleAlert } from 'lucide-react';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { CircleAlert } from 'lucide-react';
-import { Button } from '../ui/button';
-import React from 'react';
 
+// Props
 interface RenomearGrupoModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -20,8 +23,6 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
     const [novoNome, setNovoNome] = React.useState('');
 
     function handleSalvar() {
-        // aqui você pode chamar sua função de renomear (API/context) usando novoNome
-        // para este exemplo apenas fecha o modal
         onOpenChange?.(false);
         setNovoNome('');
     }
@@ -48,11 +49,11 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
                     />
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="gap-2">
                     <Button
                         variant="outline"
                         size="sm"
-                        className='mr-2 hover:bg-secondary/20 hover:text-primary cursor-pointer'
+                        className='hover:bg-secondary/20 hover:text-primary cursor-pointer'
                         onClick={() => onOpenChange?.(false)}
                     >
                         Cancelar
