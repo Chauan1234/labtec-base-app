@@ -12,3 +12,4 @@ export default function Home() {
     </>
   );
 }
+// Exemplo: inspecionar redirect_uri usado pelo adapter

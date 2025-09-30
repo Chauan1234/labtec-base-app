@@ -13,6 +13,8 @@ interface AuthContextType {
 	logout: () => void;
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -58,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 					kc.logout({
 						redirectUri:
 							typeof window !== "undefined"
-								? window.location.origin
+								? window.location.origin + baseUrl
 								: undefined
 					})
 			}}

@@ -57,7 +57,7 @@ export default function AppHeader() {
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
                                 <BreadcrumbLink
-                                    href="/dashboard"
+                                    href="/dev/apps/dashboard"
                                     className='hover:underline'
                                 >
                                     Dashboard
