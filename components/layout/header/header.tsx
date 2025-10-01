@@ -127,7 +127,7 @@ export default function AppHeader() {
                                 <Button
                                     variant="outline"
                                     size={"sm"}
-                                    className='w-full hover:bg-secondary/10 hover:text-secondary cursor-pointer'>
+                                    className='w-full hover:bg-secondary/20 hover:text-primary cursor-pointer'>
                                     Cancelar
                                 </Button>
                             </DialogClose>

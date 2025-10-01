@@ -1,7 +1,9 @@
 "use client";
 
-// React
+// React e Next
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 // Components
 import { SairGrupoModal } from "@/components/layout/sidebar/manage-groups/member/leave-group-modal";
@@ -77,13 +79,13 @@ export function NavHeader({
             {/* Logo */}
             <SidebarMenu>
                 <SidebarMenuButton asChild className="transition-all duration-200">
-                    <a href="#" className="h-auto w-auto">
+                    <Link href="#" className="h-auto w-auto">
                         {state === "collapsed" ? (
-                            <img src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} />
+                            <Image src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} height={40} />
                         ) : (
-                            <img src={LogoLabtec.src} alt="Logo Labtec" width={90} />
+                            <Image src={LogoLabtec.src} alt="Logo Labtec" width={90} height={40} />
                         )}
-                    </a>
+                    </Link>
                 </SidebarMenuButton>
             </SidebarMenu>
 

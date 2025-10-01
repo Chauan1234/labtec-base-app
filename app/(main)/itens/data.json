@@ -1,0 +1,29 @@
+[
+  {
+    "idItem": "aeb29586-aeaf-4b29-86a9-cbb5527fb44d",
+    "name": "Produto1",
+    "description": "Esta é a descrição do Produto1",
+    "amount": 100,
+    "createdAt": "2025-09-09T18:06:15.265Z",
+    "updatedAt": "2025-09-09T18:06:15.265Z",
+    "creator": "John Doe"
+  },
+  {
+    "idItem": "b1c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
+    "name": "Produto2",
+    "description": "Esta é a descrição do Produto2",
+    "amount": 200,
+    "createdAt": "2025-09-10T10:15:30.000Z",
+    "updatedAt": "2025-09-10T10:15:30.000Z",
+    "creator": "Jane Smith"
+  },
+  {
+    "idItem": "c2d3e4f5-a6b7-c8d9-e0f1-234567890abc",
+    "name": "Produto3",
+    "description": "Esta é a descrição do Produto3",
+    "amount": 300,
+    "createdAt": "2025-09-11T14:20:45.000Z",
+    "updatedAt": "2025-09-11T14:20:45.000Z",
+    "creator": "Alice Johnson"
+  }
+]

@@ -21,8 +21,7 @@ import {
     TableRow,
 }
     from "@/components/ui/table";
-import { Select, SelectContent, SelectGroup, SelectTrigger } from "@/components/ui/select";
-import { SelectItem, SelectValue } from "@radix-ui/react-select";
+import { Plus, Search } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -34,6 +33,18 @@ export function DataTable<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [globalFilter, setGlobalFilter] = React.useState<string>("");
+
+    // global filter fn: retorna true se ANY das colunas (OR) contiver o texto
+    const globalFilterFn = React.useCallback((row: any, _columnId: any, filterValue: any) => {
+        if (!filterValue) return true;
+        const search = String(filterValue).toLowerCase();
+        const fields = ["name", "description", "amount", "creator"];
+        return fields.some((id) => {
+            const v = row.getValue(id);
+            return String(v ?? "").toLowerCase().includes(search);
+        });
+    }, []);
 
     const table = useReactTable({
         data,
@@ -42,42 +53,41 @@ export function DataTable<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        // adiciona suporte a globalFilter controlado
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn,
         state: {
             columnFilters,
+            globalFilter,
         },
     });
 
     return (
         <div>
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filtrar por nome..."
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                <Select>
-                    <SelectTrigger className="ml-2 w-[180px]">
-                        <SelectValue placeholder="Filtrar por..." />
-                    </SelectTrigger>
-                    <SelectContent className="w-[180px]">
-                        <SelectGroup>
-                            <SelectItem value="all">Todos</SelectItem>
-                            <SelectItem value="name">Nome</SelectItem>
-                            <SelectItem value="description">Descrição</SelectItem>
-                            <SelectItem value="amount">Quantidade</SelectItem>
-                            <SelectItem value="createdAt">Criado em</SelectItem>
-                            <SelectItem value="updatedAt">Atualizado em</SelectItem>
-                            <SelectItem value="creator">Criador</SelectItem>
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+            <div className="flex items-center py-4 justify-between">
+                <div className="relative flex align-center">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" aria-hidden="true" />
+                    <Input
+                        placeholder={`Filtrar`}
+                        value={globalFilter}
+                        onChange={(event) => {
+                            table.setGlobalFilter(event.target.value);
+                        }}
+                        className="pl-9 max-w-sm"
+                    />
+                </div>
+
+                <Button
+                    variant={"outline"}
+                    size={"sm"}
+                >
+                    <Plus className="h-4 w-4" />
+                    Adicionar Item
+                </Button>
             </div>
             <div className="overflow-hidden rounded-md border">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-muted">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
@@ -116,9 +126,9 @@ export function DataTable<TData, TValue>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center"
+                                    className="h-10 text-center"
                                 >
-                                    No results.
+                                    Sem resultados.
                                 </TableCell>
                             </TableRow>
                         )}

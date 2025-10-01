@@ -24,12 +24,12 @@ const data = {
     NavMain: [
         {
             title: "Home",
-            url: "/dev/apps/dashboard",
+            url: "/dashboard",
             icon: LayoutDashboard,
         },
         {
             title: "Itens",
-            url: "/dev/apps/itens",
+            url: "/itens",
             icon: TableOfContents,
         }
     ],
