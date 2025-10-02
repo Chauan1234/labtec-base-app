@@ -29,7 +29,7 @@ const data = {
         },
         {
             title: "Itens",
-            url: "/items",
+            url: "/itens",
             icon: TableOfContents,
         }
     ],
