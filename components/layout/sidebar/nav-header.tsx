@@ -155,7 +155,7 @@ export function NavHeader({
                                             <div className="!bg-transparent p-0 pt-2" role="none">
                                                 <Button
                                                     variant="outline"
-                                                    className="w-full rounded-md h-7 mb-1 text-xs cursor-pointer hover:bg-secondary/20 hover:text-primary"
+                                                    className="w-full rounded-md h-7 mb-1 text-xs"
                                                     onPointerDown={(e) => e.stopPropagation()} // evita que o Command capture seleção/foco
                                                 >
                                                     <span>Novo Grupo</span>
@@ -176,7 +176,7 @@ export function NavHeader({
                                                     {group.name}
                                                     <CheckIcon
                                                         className={cn(
-                                                            "mr-2 h-4 w-4 hover:text-primary",
+                                                            "mr-2 size-4 hover:text-primary",
                                                             group.value === selectedGroup?.value ? "opacity-100" : "opacity-0"
                                                         )}
                                                     />
@@ -200,7 +200,7 @@ export function NavHeader({
                                     <Button
                                         variant={"outline"}
                                         size={"sm"}
-                                        className={cn("p-0 w-8 h-8 cursor-pointer hover:bg-secondary/10 hover:text-primary",
+                                        className={cn("p-0 w-8 h-8",
                                             state === "collapsed" ? "flex items-center justify-center rounded-md" : ""
                                         )}
                                     >
@@ -221,40 +221,37 @@ export function NavHeader({
                                 <DropdownMenuSeparator />
                                 {selectedGroup && selectedGroup.role === "Admin" ? (
                                     <>
-                                        <DropdownMenuItem className='cursor-pointer focus:bg-secondary/20 focus:text-primary'>
+                                        <DropdownMenuItem>
                                             <UserRoundCog className='focus:text-primary' />
                                             Gerenciar membros
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            className='cursor-pointer focus:bg-secondary/20 focus:text-primary'
-                                            onClick={() => setShowRenomear(true)}
-                                        >
+                                        <DropdownMenuItem onClick={() => setShowRenomear(true)}>
                                             <Pencil className='focus:text-primary' />
                                             Renomear
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem className='cursor-pointer focus:bg-secondary/20 focus:text-primary'>
+                                        <DropdownMenuItem>
                                             <Settings className='focus:text-primary' />
                                             Configurações
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            className='cursor-pointer focus:bg-destructive/10 focus:text-destructive'
+                                            variant="destructive"
                                             onClick={() => setShowExcluir(true)}
                                         >
-                                            <Trash2 className='focus:text-destructive' />
+                                            <Trash2 />
                                             Excluir grupo
                                         </DropdownMenuItem>
                                     </>
                                 ) : (
                                     <>
-                                        <DropdownMenuItem className="cursor-pointer focus:bg-secondary/10 focus:text-primary">
+                                        <DropdownMenuItem>
                                             <Settings className="focus:text-primary" />
                                             Configurações
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            className="cursor-pointer focus:bg-destructive/10 focus:text-destructive"
+                                            variant="destructive"
                                             onClick={() => setShowSair(true)}
                                         >
-                                            <LogOut className="focus:text-destructive" />
+                                            <LogOut />
                                             Sair do grupo
                                         </DropdownMenuItem>
                                     </>

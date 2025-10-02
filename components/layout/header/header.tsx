@@ -37,7 +37,6 @@ export default function AppHeader() {
     const { email, username, firstName, lastName, logout } = useAuth();
     const { selectedGroup } = useGroup();
     const [confirmOpen, setConfirmOpen] = React.useState(false);
-    console.log({ email, firstName, lastName, username });
 
     return (
         <>
@@ -88,12 +87,12 @@ export default function AppHeader() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className='focus:bg-secondary/20 focus:text-primary cursor-pointer'>
+                            <DropdownMenuItem>
                                 <Settings className='focus:text-primary' />
                                 Configurações
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                                className='focus:bg-destructive/10 focus:text-destructive cursor-pointer'
+                                variant='destructive'
                                 onSelect={() => setConfirmOpen(true)}
                             >
                                 <LogOut className='focus:text-destructive' />

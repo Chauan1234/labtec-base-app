@@ -5,12 +5,12 @@ import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
 export type Items = {
@@ -24,6 +24,13 @@ export type Items = {
 }
 
 export const columns: ColumnDef<Items>[] = [
+    {
+        accessorKey: 'número',
+        header: '',
+        cell: ({ row }) => (
+            <span>{row.index + 1}</span>
+        ),
+    },
     {
         accessorKey: 'name',
         header: 'Nome',
@@ -48,7 +55,7 @@ export const columns: ColumnDef<Items>[] = [
     },
     {
         accessorKey: 'updatedAt',
-        header: 'Atualizado em',
+        header: 'Atualizado',
         cell: ({ row }) => {
             const date = new Date(row.getValue('updatedAt'));
             return <span>{date.toLocaleDateString()}</span>;
@@ -77,12 +84,14 @@ export const columns: ColumnDef<Items>[] = [
                 <DropdownMenuContent>
                     <DropdownMenuLabel
                         className="text-xs text-muted-foreground text-center font-medium"
-                    >Ações</DropdownMenuLabel>
+                    >
+                        Ações
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                         Editar
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem variant="destructive">
                         Excluir
                     </DropdownMenuItem>
                 </DropdownMenuContent>
