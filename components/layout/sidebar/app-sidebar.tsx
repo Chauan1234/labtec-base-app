@@ -33,32 +33,10 @@ const data = {
             icon: TableOfContents,
         }
     ],
-    groups: [
-        {
-            value: "edumind",
-            name: "Edumind",
-            role: "Admin",
-        },
-        {
-            value: "eletric-games",
-            name: "Eletric Games",
-            role: "Member",
-        },
-        {
-            value: "labtec-one",
-            name: "Labtec One",
-            role: "Member",
-        },
-        {
-            value: "base-app",
-            name: "BaseApp",
-            role: "Admin",
-        },
-    ]
 };
 
 export default function AppSidebar() {
-    const { selectedGroup, setSelectedGroup } = useGroup();
+    const { selectedGroup, setSelectedGroup, groups, loading } = useGroup();
 
     // estado para controlar o modal de renomear
     const [showRenomear, setShowRenomear] = React.useState(false);
@@ -69,19 +47,17 @@ export default function AppSidebar() {
     // estado para controlar o modal de sair
     const [showSair, setShowSair] = React.useState(false);
 
-    // seta o grupo inicial baseado no defaultValue do select
+    // seta o grupo inicial baseado nos groups carregados
     useEffect(() => {
-        if (!selectedGroup) {
-            const g = data.groups[0] as Group;
-            setSelectedGroup(g);
-        }
-    }, []);
+        if (!selectedGroup && groups && groups.length > 0) setSelectedGroup(groups[0]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [groups]);
 
     return (
         <Sidebar variant="inset" collapsible="icon">
             {/* Header */}
             <SidebarHeader>
-                <NavHeader groups={data.groups} />
+                <NavHeader groups={groups || []} />
             </SidebarHeader>
             
             {/* Content */}
