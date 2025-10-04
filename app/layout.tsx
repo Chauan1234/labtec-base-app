@@ -6,6 +6,7 @@ import { GroupProvider } from "@/contexts/GroupContext";
 import AppHeader from "@/components/layout/header/header";
 import AppSidebar from "@/components/layout/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 // Styles and Metadata
 import "./globals.css";
@@ -50,10 +51,12 @@ export default function RootLayout({
                 <AppSidebar />
                 <SidebarInset>
                   <AppHeader />
-                  <div className="h-full p-4">
+                  <div className="h-full px-4 pt-6 sm:px-6 lg:px-8">
                     {children}
                   </div>
                 </SidebarInset>
+                {/* global toaster for sonner */}
+                <Toaster position="top-center" theme="light" richColors />
 
               </GroupProvider>
             </SidebarProvider>

@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -203,18 +204,20 @@ export function DataTable<TData, TValue>({
 
 
                 {/* Botão Adicionar */}
-                <Button
-                    variant={"outline"}
-                    size={"sm"}
-                >
-                    <Plus className="h-4 w-4" />
-                    Adicionar Item
-                </Button>
+                <Link href={"/itens/novo-item"}>
+                    <Button
+                        variant={"outline"}
+                        size={"sm"}
+                    >
+                        <Plus className="h-4 w-4" />
+                        Adicionar Item
+                    </Button>
+                </Link>
             </div>
 
             {/* Tabela de Dados */}
             <div className="rounded-md border">
-                <div className="max-h-[450px] relative overflow-auto">
+                <div className="max-h-[530px] relative overflow-auto">
                     <Table>
                         <TableHeader className="bg-muted sticky top-0">
                             {table.getHeaderGroups().map((headerGroup) => (
@@ -347,6 +350,6 @@ export function DataTable<TData, TValue>({
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

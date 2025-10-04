@@ -48,22 +48,6 @@ export default function AppHeader() {
                         orientation="vertical"
                         className="mr-2 data-[orientation=vertical]:h-4"
                     />
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                {selectedGroup ? selectedGroup.name : "Nenhum grupo selecionado"}
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink
-                                    href="/dev/apps/dashboard"
-                                    className='hover:underline'
-                                >
-                                    Dashboard
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
                 </div>
                 <div className='flex flex-1 items-center justify-end'>
                     <DropdownMenu>

@@ -12,8 +12,7 @@ import { ExcluirGrupoModal } from "@/components/layout/sidebar/manage-groups/adm
 import { RenomearGrupoModal } from "@/components/layout/sidebar/manage-groups/admin/rename-group-modal";
 
 // Contexts e Libs
-import { useSidebar } from "@/components/ui/sidebar";
-import { useGroup, Group } from "@/contexts/GroupContext";
+import { useGroup } from "@/contexts/GroupContext";
 
 // UI Components
 import { LayoutDashboard, TableOfContents } from "lucide-react";
@@ -50,7 +49,6 @@ export default function AppSidebar() {
     // seta o grupo inicial baseado nos groups carregados
     useEffect(() => {
         if (!selectedGroup && groups && groups.length > 0) setSelectedGroup(groups[0]);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groups]);
 
     return (
