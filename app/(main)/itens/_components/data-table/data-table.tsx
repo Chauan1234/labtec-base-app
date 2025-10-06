@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = React.useState<string>("");
     // suporta seleção de intervalo de datas: undefined | { from?: Date; to?: Date }
@@ -285,13 +286,13 @@ export function DataTable<TData, TValue>({
                     >
                         <SelectTrigger
                             size="sm"
-                            className="w-[70px]"
+                            className="w-auto"
                             id="rows-per-page"
                         >
                             <SelectValue placeholder={table.getState().pagination.pageSize} />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {[10, 20, 30, 40, 50].map((pageSize) => (
+                            {[10, 25, 50, 100].map((pageSize) => (
                                 <SelectItem key={pageSize} value={`${pageSize}`}>
                                     {pageSize}
                                 </SelectItem>

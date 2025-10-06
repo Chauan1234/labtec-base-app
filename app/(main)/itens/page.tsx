@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { columns } from "./_components/data-table/columns";
+import { buildColumns, Items } from "./_components/data-table/columns";
 import { DataTable } from "./_components/data-table/data-table";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
 import getItems from "@/lib/items-controller/items";
 import { Spinner } from "@/components/ui/spinner";
+import DeleteItemModal from "./_components/data-table/delete-item-modal";
 
 export default function ItensPage() {
     const { isAuthenticated, token } = useAuth();
@@ -14,6 +15,15 @@ export default function ItensPage() {
     const [data, setData] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+    const [itemToDelete, setItemToDelete] = React.useState<Items | null>(null);
+
+    const handleDelete = React.useCallback((item: Items) => {
+        setItemToDelete(item);
+        setShowDeleteModal(true);
+    }, []);
+
+    const columns = React.useMemo(() => buildColumns(handleDelete), [handleDelete]);
 
     React.useEffect(() => {
         let mounted = true;
@@ -64,7 +74,21 @@ export default function ItensPage() {
             ) : error ? (
                 <div className="text-destructive">Erro: {error}</div>
             ) : (
-                <DataTable columns={columns} data={data} />
+                <>
+                    <DataTable columns={columns} data={data} />
+                    <DeleteItemModal
+                        open={showDeleteModal}
+                        idItem={itemToDelete?.idItem ?? null}
+                        onOpenChange={(open) => {
+                            setShowDeleteModal(open);
+                            if (!open) setItemToDelete(null);
+                        }}
+                        onDeleted={(id) => {
+                            // remove o item do estado local sem recarregar a página
+                            setData((prev) => prev.filter((it: any) => it.idItem !== id));
+                        }}
+                    />
+                </>
             )}
         </div>
     );

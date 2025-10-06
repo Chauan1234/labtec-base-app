@@ -6,7 +6,7 @@ export type ApiGroup = {
   owner: string;
 };
 
-const GROUPS_URL = "https://labtec.satc.edu.br/dev/baseApi/groups";
+const GROUPS_URL = "https://labtec.satc.edu.br/dev/base-api/groups";
 
 export async function fetchGroupsAxios(token?: string | null) {
   const res = await axios.get(GROUPS_URL, {

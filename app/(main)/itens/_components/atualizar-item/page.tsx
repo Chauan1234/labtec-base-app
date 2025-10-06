@@ -1,27 +1,18 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { postItems } from "@/lib/items-controller/items";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type Resolver } from "react-hook-form";
-import React from "react";
-import { z } from "zod";
-import { Spinner } from "@/components/ui/spinner";
+import { putItem } from "@/lib/items-controller/items";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import React from "react";
+import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
+import z from "zod";
 
 const _baseSchema = z.object({
     name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres.").max(100, "Nome deve ter no máximo 100 caracteres.").nonempty("Nome é obrigatório."),
@@ -53,9 +44,8 @@ export default function Page() {
             name: "",
             description: "",
             amount: 0,
-
         },
-    })
+    });
 
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
@@ -78,24 +68,14 @@ export default function Page() {
             return;
         }
 
-        const payload = {
-            idGroup: selectedGroup.idGroup,
-            name: values.name,
-            description: values.description,
-            amount: values.amount,
-            token: token ?? null,
-        };
-
         try {
             setIsSubmitting(true);
-            await postItems(payload);
-            form.reset();
-            toast.success("Item criado com sucesso!", { closeButton: true });
+            await putItem(selectedGroup.idGroup, idItem, { name: values.name, description: values.description, amount: values.amount, token });
+            toast.success("Item atualizado com sucesso.", { closeButton: true });
+            redirect("/itens");
         } catch (e) {
-            console.error("Falha ao postar o item", e);
-            toast.error("Ops! Parece que houve um problema.", { closeButton: true });
-        } finally {
-            setIsSubmitting(false);
+            console.error("Erro ao atualizar item:", e);
+            toast.error("Erro ao atualizar o item.", { closeButton: true });
         }
     }
 
@@ -106,10 +86,10 @@ export default function Page() {
                     <FieldGroup>
                         <FieldSet>
                             <FieldLegend>
-                                Informações do Item
+                                Atualizar Item
                             </FieldLegend>
                             <FieldDescription>
-                                Formulário para criação de um novo item.
+                                Atualize as informações do item abaixo.
                             </FieldDescription>
                             <FieldGroup>
                                 <FormField
@@ -119,7 +99,7 @@ export default function Page() {
                                         <FormItem>
                                             <FormLabel>Nome do item</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Digite o nome do item" {...field} />
+                                                <Input placeholder="Nome do item" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -190,4 +170,8 @@ export default function Page() {
             </Form>
         </div>
     );
+}
+
+function zodResolver(formSchema: any): unknown {
+    throw new Error("Function not implemented.");
 }

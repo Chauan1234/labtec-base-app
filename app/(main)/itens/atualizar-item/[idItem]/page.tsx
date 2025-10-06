@@ -1,27 +1,21 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { postItems } from "@/lib/items-controller/items";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type Resolver } from "react-hook-form";
-import React from "react";
-import { z } from "zod";
-import { Spinner } from "@/components/ui/spinner";
+import { putItem, getItems } from "@/lib/items-controller/items";
 import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import { useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
+import z from "zod";
 
 const _baseSchema = z.object({
     name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres.").max(100, "Nome deve ter no máximo 100 caracteres.").nonempty("Nome é obrigatório."),
@@ -45,6 +39,10 @@ const formSchema = _baseSchema.refine((data) => data.amount !== undefined, {
 export default function Page() {
     type FormValues = z.infer<typeof formSchema>;
 
+    const router = useRouter();
+    const params = useParams();
+    const idItem = Array.isArray(params?.idItem) ? params?.idItem[0] : params?.idItem;
+
     const form = useForm<FormValues>({
         mode: "onChange",
         reValidateMode: "onChange",
@@ -53,50 +51,87 @@ export default function Page() {
             name: "",
             description: "",
             amount: 0,
-
         },
-    })
+    });
 
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [loadingItem, setLoadingItem] = React.useState(false);
+
+    React.useEffect(() => {
+        let mounted = true;
+        const load = async () => {
+            if (!isAuthenticated || !selectedGroup || !idItem) return;
+            setLoadingItem(true);
+            try {
+                const items = await getItems(selectedGroup.idGroup, token);
+                if (!mounted) return;
+                const found = (items ?? []).find((it: any) => it.idItem === idItem);
+                if (!found) {
+                    toast.error("Item não encontrado.");
+                    router.push('/itens');
+                    return;
+                }
+                form.reset({
+                    name: found.name ?? "",
+                    description: found.description ?? "",
+                    amount: found.amount ?? 0,
+                });
+            } catch (e) {
+                console.error('Erro ao carregar item:', e);
+                toast.error('Erro ao carregar item.');
+            } finally {
+                if (mounted) setLoadingItem(false);
+            }
+        };
+        load();
+        return () => { mounted = false; };
+    }, [isAuthenticated, selectedGroup, idItem, token]);
 
     async function formSubmit(values: FormValues) {
-        // precaução extra: garantir autenticação e seleção de grupo
         if (!isAuthenticated) {
-            console.warn("Tentativa de criar item sem estar autenticado");
+            toast.error('Usuário não autenticado');
             return;
         }
         if (!selectedGroup) {
-            console.warn("Nenhum grupo selecionado ao tentar criar o item");
+            toast.error('Nenhum grupo selecionado');
             return;
         }
-
-        if (values.amount === undefined) {
-            console.warn("Quantidade está indefinida, isso não deveria acontecer devido à validação");
+        if (!idItem) {
+            toast.error('ID do item inválido');
             return;
         }
-
-        const payload = {
-            idGroup: selectedGroup.idGroup,
-            name: values.name,
-            description: values.description,
-            amount: values.amount,
-            token: token ?? null,
-        };
 
         try {
             setIsSubmitting(true);
-            await postItems(payload);
-            form.reset();
-            toast.success("Item criado com sucesso!", { closeButton: true });
+            await putItem(selectedGroup.idGroup, idItem, { ...values, token });
+            toast.success("Item atualizado com sucesso.");
+            router.push('/itens');
         } catch (e) {
-            console.error("Falha ao postar o item", e);
-            toast.error("Ops! Parece que houve um problema.", { closeButton: true });
+            console.error("Erro ao atualizar item:", e);
+            toast.error("Erro ao atualizar o item.");
         } finally {
             setIsSubmitting(false);
         }
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="flex flex-row items-center justify-center gap-2 px-4 sm:px-6 lg:px-8">
+                <Spinner />
+                Aguardando autenticação...
+            </div>
+        );
+    }
+
+    if (!selectedGroup) {
+        return (
+            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
+                Selecione um grupo
+            </div>
+        );
     }
 
     return (
@@ -106,10 +141,10 @@ export default function Page() {
                     <FieldGroup>
                         <FieldSet>
                             <FieldLegend>
-                                Informações do Item
+                                Atualizar Item
                             </FieldLegend>
                             <FieldDescription>
-                                Formulário para criação de um novo item.
+                                Atualize as informações do item abaixo.
                             </FieldDescription>
                             <FieldGroup>
                                 <FormField
@@ -119,7 +154,7 @@ export default function Page() {
                                         <FormItem>
                                             <FormLabel>Nome do item</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Digite o nome do item" {...field} />
+                                                <Input placeholder="Nome do item" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -163,15 +198,8 @@ export default function Page() {
                                             <Spinner />
                                             <span>Enviando...</span>
                                         </div>
-                                    ) : isAuthenticated && selectedGroup ? (
-                                        "Criar item"
-                                    ) : !isAuthenticated && selectedGroup ? (
-                                        <div className="flex flex-row items-center gap-1">
-                                            <Spinner />
-                                            <span>Autenticando...</span>
-                                        </div>
                                     ) : (
-                                        "Selecione um grupo"
+                                        "Atualizar item"
                                     )}
                                 </Button>
                                 <Link href="/itens">

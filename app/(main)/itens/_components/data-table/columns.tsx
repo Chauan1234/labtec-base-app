@@ -12,6 +12,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link";
 
 export type Items = {
     idItem: string,
@@ -23,79 +24,83 @@ export type Items = {
     creator: string,
 }
 
-export const columns: ColumnDef<Items>[] = [
-    {
-        accessorKey: 'número',
-        header: '',
-        cell: ({ row }) => (
-            <span>{row.index + 1}</span>
-        ),
-    },
-    {
-        accessorKey: 'name',
-        header: 'Nome',
-        filterFn: (row, columnId, filterValue) =>
-            String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
-    },
-    {
-        accessorKey: 'description',
-        header: 'Descrição',
-        filterFn: (row, columnId, filterValue) =>
-            String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
-    },
-    {
-        accessorKey: 'amount',
-        header: 'Quantidade',
-        cell: ({ row }) => (
-            <span>{row.getValue('amount')}</span>
-        ),
-        enableSorting: true,
-        filterFn: (row, columnId, filterValue) =>
-            String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
-    },
-    {
-        accessorKey: 'updatedAt',
-        header: 'Atualizado',
-        cell: ({ row }) => {
-            const date = new Date(row.getValue('updatedAt'));
-            return <span>{date.toLocaleDateString()}</span>;
+export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>[] {
+    return [
+        {
+            accessorKey: 'número',
+            header: '',
+            cell: ({ row }) => (
+                <span>{row.index + 1}</span>
+            ),
         },
-    },
-    {
-        accessorKey: 'creator',
-        header: 'Criador',
-        cell: ({ row }) => (
-            <span>{row.getValue('creator')}</span>
-        ),
-        enableSorting: true,
-        filterFn: (row, columnId, filterValue) =>
-            String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
-    },
-    {
-        id: 'actions',
-        cell: ({ row }) => (
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Abrir menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuLabel
-                        className="text-xs text-muted-foreground text-center font-medium"
-                    >
-                        Ações
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem variant="destructive">
-                        Excluir
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        ),
-    },
-]
+        {
+            accessorKey: 'name',
+            header: 'Nome',
+            filterFn: (row, columnId, filterValue) =>
+                String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
+        },
+        {
+            accessorKey: 'description',
+            header: 'Descrição',
+            filterFn: (row, columnId, filterValue) =>
+                String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
+        },
+        {
+            accessorKey: 'amount',
+            header: 'Quantidade',
+            cell: ({ row }) => (
+                <span>{row.getValue('amount')}</span>
+            ),
+            enableSorting: true,
+            filterFn: (row, columnId, filterValue) =>
+                String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
+        },
+        {
+            accessorKey: 'updatedAt',
+            header: 'Atualizado',
+            cell: ({ row }) => {
+                const date = new Date(row.getValue('updatedAt'));
+                return <span>{date.toLocaleDateString()}</span>;
+            },
+        },
+        {
+            accessorKey: 'creator',
+            header: 'Criador',
+            cell: ({ row }) => (
+                <span>{row.getValue('creator')}</span>
+            ),
+            enableSorting: true,
+            filterFn: (row, columnId, filterValue) =>
+                String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
+        },
+        {
+            id: 'actions',
+            cell: ({ row }) => (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Abrir menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel
+                            className="text-xs text-muted-foreground text-center font-medium"
+                        >
+                            Ações
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                            <Link href={`/itens/atualizar-item/${(row.original as Items).idItem}`}>
+                                Editar
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(row.original as Items)}>
+                            Excluir
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ),
+        },
+    ];
+}
