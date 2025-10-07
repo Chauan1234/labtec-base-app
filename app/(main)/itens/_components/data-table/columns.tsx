@@ -90,11 +90,11 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
                             Ações
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Link href={`/itens/atualizar-item/${(row.original as Items).idItem}`}>
+                        <Link href={`/itens/atualizar-item/${(row.original as Items).idItem}`}>
+                            <DropdownMenuItem>
                                 Editar
-                            </Link>
-                        </DropdownMenuItem>
+                            </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(row.original as Items)}>
                             Excluir
                         </DropdownMenuItem>

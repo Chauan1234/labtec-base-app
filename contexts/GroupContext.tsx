@@ -21,7 +21,7 @@ type GroupContextType = {
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
 
 export function GroupProvider({ children }: { children: React.ReactNode }) {
-  const { token,isAuthenticated } = useAuth();
+  const { token, isAuthenticated } = useAuth();
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState<boolean>(false);

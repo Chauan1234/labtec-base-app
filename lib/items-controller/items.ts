@@ -36,7 +36,7 @@ export async function deleteItem(idGroup: string, idItem: string, token?: string
 
 export async function putItem(idGroup: string, idItem: string, item: Omit<ItemPost, "idGroup">) {
   const url = ITEMS_URL.replace("{idGroup}", idGroup) + `/${idItem}`;
-  const res = await axios.put(url, item, {
+  const res = await axios.patch(url, item, {
     headers: item.token ? { Authorization: `Bearer ${item.token}` } : undefined,
   });
   return res.data;

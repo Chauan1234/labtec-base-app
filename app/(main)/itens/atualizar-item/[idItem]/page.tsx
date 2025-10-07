@@ -1,142 +1,160 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
+import React from "react";
 import { putItem, getItems } from "@/lib/items-controller/items";
-import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
-import { useForm, type Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useRouter, useParams } from "next/navigation";
 import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const _baseSchema = z.object({
-    name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres.").max(100, "Nome deve ter no máximo 100 caracteres.").nonempty("Nome é obrigatório."),
-    description: z.string().min(3, "Descrição deve ter pelo menos 3 caracteres.").max(255, "Descrição deve ter no máximo 255 caracteres.").nonempty("Descrição é obrigatória."),
-    amount: z.preprocess((val) => {
-        if (typeof val === "string") {
-            const trimmed = val.trim();
-            if (trimmed === "") return undefined;
-            const n = Number(trimmed);
-            return Number.isNaN(n) ? val : n;
-        }
-        return val;
-    }, z.number().min(0, "Quantidade deve ser um número positivo.").int("Quantidade deve ser um número inteiro.")),
-});
-
-const formSchema = _baseSchema.refine((data) => data.amount !== undefined, {
-    message: "Quantidade é obrigatória",
-    path: ["amount"],
+const baseSchema = z.object({
+    name: z.string()
+        .min(3, "O nome do item deve ter pelo menos 3 caracteres")
+        .max(100, "O nome do item deve ter no máximo 100 caracteres")
+        .nonempty("O nome do item é obrigatório"),
+    description: z.string()
+        .min(3, "A descrição do item deve ter pelo menos 3 caracteres")
+        .max(255, "A descrição do item deve ter no máximo 255 caracteres")
+        .nonempty("A descrição do item é obrigatória"),
+    amount: z.union([z.string(), z.number()])
+        .refine((val) => {
+            // Verifica se não é string vazia
+            if (val === "" || val === null || val === undefined) {
+                return false;
+            }
+            return true;
+        }, {
+            message: "A quantidade é obrigatória"
+        })
+        .transform((val) => {
+            // Converte para number se for string
+            if (typeof val === "string") {
+                const num = Number(val);
+                if (isNaN(num)) {
+                    throw new Error("A quantidade deve ser um número válido");
+                }
+                return num;
+            }
+            return val;
+        })
+        .refine((val) => val >= 0, {
+            message: "A quantidade deve ser um número positivo"
+        })
+        .refine((val) => Number.isInteger(val), {
+            message: "A quantidade deve ser um número inteiro"
+        })
+        .refine((val) => val <= 999999999, {
+            message: "A quantidade deve ter no máximo 9 dígitos"
+        })
 });
 
 export default function Page() {
-    type FormValues = z.infer<typeof formSchema>;
-
     const router = useRouter();
-    const params = useParams();
-    const idItem = Array.isArray(params?.idItem) ? params?.idItem[0] : params?.idItem;
 
+    // Pegando id do item dos parâmetros da URL
+    const params = useParams();
+    const idItem = Array.isArray(params.idItem) ? params.idItem[0] : params.idItem;
+
+    // Definindo tipo do formulário
+    type FormValues = z.input<typeof baseSchema>;
+
+    // Definindo formulário e validação
     const form = useForm<FormValues>({
         mode: "onChange",
         reValidateMode: "onChange",
-        resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+        resolver: zodResolver(baseSchema),
         defaultValues: {
             name: "",
             description: "",
-            amount: 0,
-        },
-    });
+            amount: "",
+        }
+    })
 
+    // Definindo variáveis de Contexts
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
 
+    // Estado de botão de envio do formulário
     const [isSubmitting, setIsSubmitting] = React.useState(false);
-    const [loadingItem, setLoadingItem] = React.useState(false);
 
+    // Estado de loading para buscar dados do item
+    const [loading, setLoading] = React.useState(false);
+
+    // Buscando dados do item para preencher o formulário
     React.useEffect(() => {
-        let mounted = true;
-        const load = async () => {
-            if (!isAuthenticated || !selectedGroup || !idItem) return;
-            setLoadingItem(true);
+        async function loadItem() {
+            if (!selectedGroup || !idItem) {
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
+
             try {
                 const items = await getItems(selectedGroup.idGroup, token);
-                if (!mounted) return;
-                const found = (items ?? []).find((it: any) => it.idItem === idItem);
-                if (!found) {
-                    toast.error("Item não encontrado.");
-                    router.push('/itens');
-                    return;
+                const item = Array.isArray(items) ? items.find((i: any) => i.idItem === idItem) : null;
+
+                if (item) {
+                    form.reset({
+                        name: item.name ?? "",
+                        description: item.description ?? "",
+                        amount: String(item.amount ?? ""),
+                    });
+                } else {
+                    toast.error("Item não encontrado.", { closeButton: true });
+                    router.push("/itens");
                 }
-                form.reset({
-                    name: found.name ?? "",
-                    description: found.description ?? "",
-                    amount: found.amount ?? 0,
-                });
-            } catch (e) {
-                console.error('Erro ao carregar item:', e);
-                toast.error('Erro ao carregar item.');
+            } catch (error) {
+                console.error("Erro ao carregar item:", error);
+                toast.error("Erro ao carregar o item.", { closeButton: true });
+                router.push("/itens");
             } finally {
-                if (mounted) setLoadingItem(false);
+                setLoading(false);
             }
-        };
-        load();
-        return () => { mounted = false; };
-    }, [isAuthenticated, selectedGroup, idItem, token]);
+        }
+        loadItem();
+    }, [idItem, selectedGroup, token]);
 
-    async function formSubmit(values: FormValues) {
-        if (!isAuthenticated) {
-            toast.error('Usuário não autenticado');
-            return;
-        }
-        if (!selectedGroup) {
-            toast.error('Nenhum grupo selecionado');
-            return;
-        }
-        if (!idItem) {
-            toast.error('ID do item inválido');
-            return;
-        }
+    // Função para enviar o formulário
+    async function formSubmit(data: FormValues) {
+        if (!isAuthenticated || !selectedGroup || !idItem) return;
 
+        setIsSubmitting(true);
         try {
-            setIsSubmitting(true);
-            await putItem(selectedGroup.idGroup, idItem, { ...values, token });
-            toast.success("Item atualizado com sucesso.");
-            router.push('/itens');
-        } catch (e) {
-            console.error("Erro ao atualizar item:", e);
-            toast.error("Erro ao atualizar o item.");
+            // O zod já processou e validou os dados, então data.amount será number
+            const validatedData = baseSchema.parse(data);
+
+            await putItem(selectedGroup.idGroup, idItem, { ...validatedData, token });
+            toast.success("Item atualizado com sucesso.", { closeButton: true });
+            router.push("/itens");
+        } catch (error) {
+            console.error("Erro ao atualizar item:", error);
+            toast.error("Erro ao atualizar o item.", { closeButton: true });
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    if (!isAuthenticated) {
+    if (loading) {
         return (
-            <div className="flex flex-row items-center justify-center gap-2 px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-md flex items-center justify-center">
                 <Spinner />
-                Aguardando autenticação...
             </div>
-        );
-    }
-
-    if (!selectedGroup) {
-        return (
-            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8">
-                Selecione um grupo
-            </div>
-        );
+        )
     }
 
     return (
         <div className="w-full max-w-md">
-            <Form {...form}>
+            <Form {...form} >
                 <form onSubmit={form.handleSubmit(formSubmit)}>
                     <FieldGroup>
                         <FieldSet>
@@ -167,7 +185,12 @@ export default function Page() {
                                         <FormItem>
                                             <FormLabel>Descrição do item</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="Digite a descrição do item" maxLength={255} className="max-h-45 max-w-auto" {...field} />
+                                                <Textarea
+                                                    placeholder="Digite a descrição do item"
+                                                    maxLength={255}
+                                                    className="max-h-45 max-w-auto"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -180,7 +203,11 @@ export default function Page() {
                                         <FormItem>
                                             <FormLabel>Quantidade</FormLabel>
                                             <FormControl>
-                                                <Input type="number" maxLength={16} placeholder="Digite a quantidade" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Digite a quantidade"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -215,7 +242,7 @@ export default function Page() {
                         </FieldSet>
                     </FieldGroup>
                 </form>
-            </Form>
-        </div>
-    );
+            </Form >
+        </div >
+    )
 }

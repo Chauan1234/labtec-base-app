@@ -15,6 +15,8 @@ class KeycloakSingleton {
 		}
 		return KeycloakSingleton.instance;
 	}
+
+	
 }
 
 export class KeycloakService {
