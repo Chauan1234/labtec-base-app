@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, UserRoundX } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -90,7 +90,7 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
                             Ações
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <Link href={`/itens/atualizar-item/${(row.original as Items).idItem}`}>
+                        <Link href={`/itens/${(row.original as Items).idItem}/atualizar-item`}>
                             <DropdownMenuItem>
                                 Editar
                             </DropdownMenuItem>
@@ -103,4 +103,57 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
             ),
         },
     ];
+}
+
+export type Users = {
+    idUser: string,
+    nameUser: string,
+    role: 'admin' | 'user',
+}
+
+export function buildColumnsManageMembers(): ColumnDef<Users>[] {
+    return [
+        {
+            accessorKey: 'nameUser',
+            header: 'Nome',
+        },
+        {
+            accessorKey: 'role',
+            header: 'Função',
+        },
+        {
+            id: 'actions',
+            cell: ({ row }) => (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Abrir menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel
+                            className="text-xs text-muted-foreground text-center font-medium"
+                        >
+                            Ações
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {row.getValue('role') === 'admin' ? (
+                            <DropdownMenuItem>
+                                Rebaixar a membro
+                            </DropdownMenuItem>
+                        ) : (
+                            <DropdownMenuItem>
+                                Promover a admin
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem variant="destructive">
+                            <UserRoundX />
+                            <span>Remover do grupo</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ),
+        },
+    ]
 }

@@ -7,9 +7,9 @@ import { useEffect } from "react";
 // Components
 import { NavMain } from "@/components/layout/sidebar/nav-main";
 import { NavHeader } from "@/components/layout/sidebar/nav-header";
-import { SairGrupoModal } from "@/components/layout/sidebar/manage-groups/member/leave-group-modal";
-import { ExcluirGrupoModal } from "@/components/layout/sidebar/manage-groups/admin/delete-group-modal";
-import { RenomearGrupoModal } from "@/components/layout/sidebar/manage-groups/admin/rename-group-modal";
+import { SairGrupoModal } from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
+import { ExcluirGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/delete-group-modal";
+import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
 
 // Contexts e Libs
 import { useGroup } from "@/contexts/GroupContext";

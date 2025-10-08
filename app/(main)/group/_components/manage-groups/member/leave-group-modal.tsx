@@ -2,7 +2,7 @@
 import React from "react";
 
 // UI Components
-import { Button } from '../../../../ui/button';
+import { Button } from '../../../../../../components/ui/button';
 import { CircleAlert } from 'lucide-react';
 import {
     Dialog,
@@ -11,7 +11,7 @@ import {
     DialogTitle,
     DialogDescription,
     DialogFooter
-} from '../../../../ui/dialog';
+} from '../../../../../../components/ui/dialog';
 
 // Props
 interface SairGrupoModalProps {

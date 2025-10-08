@@ -5,7 +5,7 @@ import React from "react";
 import { useGroup } from "@/contexts/GroupContext";
 
 // UI Components
-import { Button } from '../../../../ui/button';
+import { Button } from '../../../../../../components/ui/button';
 import { CircleAlert } from 'lucide-react';
 import {
     Dialog,

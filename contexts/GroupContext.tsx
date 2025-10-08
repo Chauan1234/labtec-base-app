@@ -29,30 +29,30 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
   const mapApi = (g: ApiGroup): Group => ({ idGroup: g.idGroup, name: g.name, owner: g.owner });
 
   const refresh = useCallback(async () => {
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
-      console.log(token);
       const api = await fetchGroupsAxios(token);
       const mapped = api.map(mapApi);
       setGroups(mapped);
-      if (!selectedGroup && mapped.length > 0) setSelectedGroup(mapped[0]);
+
+      // trocar selectedGroup pelo item atualizado (mesmo id) ou escolher o primeiro
+      setSelectedGroup(prev => prev ?? (mapped.length > 0 ? mapped[0] : null));
+      setSelectedGroup(prev => {
+        if (!prev) return mapped.length > 0 ? mapped[0] : null;
+        const updated = mapped.find(g => g.idGroup === prev.idGroup);
+        return updated ?? prev; // se não encontrou, mantém o anterior
+      });
     } catch (e) {
       console.error("Failed to fetch groups", e);
     } finally {
       setLoading(false);
     }
-  }, [selectedGroup, token]);
-
-  useEffect(()=>{
-    if(isAuthenticated){
-      refresh();
-    }
-  },[isAuthenticated]);
+  }, [token, isAuthenticated]);
 
   useEffect(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refresh]);
 
   return (
     <GroupContext.Provider value={{ selectedGroup, setSelectedGroup, groups, loading, refresh }}>

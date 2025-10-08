@@ -6,9 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 // Components
-import { SairGrupoModal } from "@/components/layout/sidebar/manage-groups/member/leave-group-modal";
-import { ExcluirGrupoModal } from "@/components/layout/sidebar/manage-groups/admin/delete-group-modal";
-import { RenomearGrupoModal } from "@/components/layout/sidebar/manage-groups/admin/rename-group-modal";
+import { SairGrupoModal } from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
+import { ExcluirGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/delete-group-modal";
+import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
 
 // Assets
 import LogoLabtec from "../../../public/logo-labtec.png";
@@ -81,7 +81,7 @@ export function NavHeader({
             {/* Logo */}
             <SidebarMenu>
                 <SidebarMenuButton asChild className="transition-all duration-200">
-                    <Link href="#" className="h-auto w-auto">
+                    <Link href="/dashboard" className="h-auto w-auto">
                         {state === "collapsed" ? (
                             <Image src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} height={40} />
                         ) : (
@@ -209,10 +209,12 @@ export function NavHeader({
                             <DropdownMenuSeparator />
                             {selectedGroup && selectedGroup.owner === `${firstName} ${lastName}` ? (
                                 <>
-                                    <DropdownMenuItem>
-                                        <UserRoundCog className='focus:text-primary' />
-                                        Gerenciar membros
-                                    </DropdownMenuItem>
+                                    <Link href={`/group/${selectedGroup.idGroup}/members`}>
+                                        <DropdownMenuItem>
+                                            <UserRoundCog className='focus:text-primary' />
+                                            Gerenciar membros
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuItem onClick={() => setShowRenomear(true)}>
                                         <Pencil className='focus:text-primary' />
                                         Renomear
