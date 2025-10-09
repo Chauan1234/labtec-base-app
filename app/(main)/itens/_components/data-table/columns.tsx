@@ -108,10 +108,50 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
 export type Users = {
     idUser: string,
     nameUser: string,
-    role: 'admin' | 'user',
+    role: 'ADMIN' | 'USER',
 }
 
-export function buildColumnsManageMembers(): ColumnDef<Users>[] {
+export function MemberActions({
+    user,
+    onToggleRole,
+    disabled,
+}: {
+    user: Users;
+    onToggleRole?: (user: Users) => void;
+    disabled?: boolean;
+}) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0" disabled={disabled} title={disabled ? "Ações indisponíveis para o owner" : undefined}>
+                    <span className="sr-only">Abrir menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel
+                    className="text-xs text-muted-foreground text-center font-medium"
+                >
+                    Ações
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {user.role === 'ADMIN' ? (
+                    <DropdownMenuItem onClick={() => !disabled && onToggleRole?.(user)}>
+                        Rebaixar a membro
+                    </DropdownMenuItem>
+                ) : (
+                    <DropdownMenuItem onClick={() => !disabled && onToggleRole?.(user)}>
+                        Promover a admin
+                    </DropdownMenuItem>
+                )}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+export function buildColumnsManageMembers(handlers?: {
+    onToggleRole?: (user: Users) => void;
+}): ColumnDef<Users>[] {
     return [
         {
             accessorKey: 'nameUser',
@@ -124,35 +164,10 @@ export function buildColumnsManageMembers(): ColumnDef<Users>[] {
         {
             id: 'actions',
             cell: ({ row }) => (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel
-                            className="text-xs text-muted-foreground text-center font-medium"
-                        >
-                            Ações
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        {row.getValue('role') === 'admin' ? (
-                            <DropdownMenuItem>
-                                Rebaixar a membro
-                            </DropdownMenuItem>
-                        ) : (
-                            <DropdownMenuItem>
-                                Promover a admin
-                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem variant="destructive">
-                            <UserRoundX />
-                            <span>Remover do grupo</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <MemberActions
+                    user={row.original as Users}
+                    onToggleRole={handlers?.onToggleRole}
+                />
             ),
         },
     ]

@@ -86,6 +86,7 @@ export function NavHeader({
                             <Image src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} height={40} />
                         ) : (
                             <Image src={LogoLabtec.src} alt="Logo Labtec" width={90} height={40} />
+                            
                         )}
                     </Link>
                 </SidebarMenuButton>
