@@ -2,8 +2,9 @@ import axios from "axios";
 
 export type ApiGroup = {
   idGroup: string;
-  name: string;
-  owner: string;
+  nameGroup: string;
+  ownerGroup: string;
+  role: 'ADMIN' | 'USER';
 };
 
 const GROUPS_URL = "https://labtec.satc.edu.br/dev/base-api/groups";

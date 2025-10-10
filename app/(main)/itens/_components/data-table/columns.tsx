@@ -13,6 +13,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGroup } from "@/contexts/GroupContext";
 
 export type Items = {
     idItem: string,
@@ -107,7 +109,9 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
 
 export type Users = {
     idUser: string,
-    nameUser: string,
+    name: string,
+    username: string,
+    email: string,
     role: 'ADMIN' | 'USER',
 }
 
@@ -120,10 +124,25 @@ export function MemberActions({
     onToggleRole?: (user: Users) => void;
     disabled?: boolean;
 }) {
+    const { firstName, lastName } = useAuth();
+    const { selectedGroup } = useGroup();
+
+    const ownerName = selectedGroup?.ownerGroup;
+    const userFullName = user.name;
+    const isOwner = ownerName !== "" && userFullName === ownerName;
+    const isSelf = userFullName === `${firstName} ${lastName}`;
+
+    const finalDisabled = !!disabled || isOwner || isSelf;
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0" disabled={disabled} title={disabled ? "Ações indisponíveis para o owner" : undefined}>
+                <Button 
+                variant="ghost" 
+                className="h-8 w-8 p-0" 
+                disabled={finalDisabled} 
+                title={isOwner ? "Ações indisponíveis para o owner" : undefined}
+                >
                     <span className="sr-only">Abrir menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -136,11 +155,11 @@ export function MemberActions({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {user.role === 'ADMIN' ? (
-                    <DropdownMenuItem onClick={() => !disabled && onToggleRole?.(user)}>
+                    <DropdownMenuItem onClick={() => !finalDisabled && onToggleRole?.(user)}>
                         Rebaixar a membro
                     </DropdownMenuItem>
                 ) : (
-                    <DropdownMenuItem onClick={() => !disabled && onToggleRole?.(user)}>
+                    <DropdownMenuItem onClick={() => !finalDisabled && onToggleRole?.(user)}>
                         Promover a admin
                     </DropdownMenuItem>
                 )}

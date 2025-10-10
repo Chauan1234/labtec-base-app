@@ -31,6 +31,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import Link from 'next/link';
 
 
 export default function AppHeader() {
@@ -71,10 +72,12 @@ export default function AppHeader() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <Settings className='focus:text-primary' />
-                                Configurações
-                            </DropdownMenuItem>
+                            <Link href="/user-config/" passHref>
+                                <DropdownMenuItem>
+                                    <Settings className='focus:text-primary' />
+                                    Configurações
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuItem
                                 variant='destructive'
                                 onSelect={() => setConfirmOpen(true)}

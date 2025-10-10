@@ -6,8 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 
 type Group = {
   idGroup: string;
-  name: string;
-  owner: string;
+  nameGroup: string;
+  ownerGroup: string;
+  role: 'ADMIN' | 'USER';
 };
 
 type GroupContextType = {
@@ -26,7 +27,7 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const mapApi = (g: ApiGroup): Group => ({ idGroup: g.idGroup, name: g.name, owner: g.owner });
+  const mapApi = (g: ApiGroup): Group => ({ idGroup: g.idGroup, nameGroup: g.nameGroup, ownerGroup: g.ownerGroup, role: g.role });
 
   const refresh = useCallback(async () => {
     if (!isAuthenticated) return;

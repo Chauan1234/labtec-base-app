@@ -4,6 +4,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Package from '../../../package.json';
 
 // Components
 import { SairGrupoModal } from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
@@ -11,8 +12,7 @@ import { ExcluirGrupoModal } from "@/app/(main)/group/_components/manage-groups/
 import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
 
 // Assets
-import LogoLabtec from "../../../public/logo-labtec.png";
-import LogoLabtecSemTexto from "../../../public/logo-labtec-sem-texto.png";
+import LogoLabtec from "@/public/logo-labtec-sem-texto.png";
 
 // Contexts e Libs
 import { cn } from "@/lib/utils";
@@ -58,8 +58,9 @@ export function NavHeader({
 }: {
     groups: {
         idGroup: string;
-        name: string;
-        owner: string;
+        nameGroup: string;
+        ownerGroup: string;
+        role: 'ADMIN' | 'USER';
     }[]
 }) {
     // hooks
@@ -83,10 +84,20 @@ export function NavHeader({
                 <SidebarMenuButton asChild className="transition-all duration-200">
                     <Link href="/dashboard" className="h-auto w-auto">
                         {state === "collapsed" ? (
-                            <Image src={LogoLabtecSemTexto.src} alt="Logo Labtec" width={40} height={40} />
+                            <Image src={LogoLabtec.src} alt="Logo Labtec" width={40} height={40} />
                         ) : (
-                            <Image src={LogoLabtec.src} alt="Logo Labtec" width={90} height={40} />
-                            
+                            <div className="flex flex-row items-center gap-2">
+                                <Image src={LogoLabtec.src} alt="Logo Labtec" width={40} height={40} />
+                                <div className="flex flex-col justify-between">
+                                    <span className="text-base">
+                                        Base
+                                        <span className="text-primary">
+                                            App
+                                        </span>
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">{Package.version}</span>
+                                </div>
+                            </div>
                         )}
                     </Link>
                 </SidebarMenuButton>
@@ -123,7 +134,7 @@ export function NavHeader({
                                         <ChevronsUpDown className="h-4 w-4 shrink-0" />
                                     ) : (
                                         <>
-                                            {value ? value : (selectedGroup ? selectedGroup.name : <span>Selecionar Grupo</span>)}
+                                            {value ? value : (selectedGroup ? selectedGroup.nameGroup : <span>Selecionar Grupo</span>)}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </>
                                     )}
@@ -162,7 +173,7 @@ export function NavHeader({
                                                 }}
                                                 className="justify-between cursor-pointer hover:font-medium"
                                             >
-                                                {group.name}
+                                                {group.nameGroup}
                                                 <CheckIcon
                                                     className={cn(
                                                         "mr-2 size-4 hover:text-primary",
@@ -208,7 +219,7 @@ export function NavHeader({
                                 Gerenciar grupo
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            {selectedGroup && selectedGroup.owner === `${firstName} ${lastName}` ? (
+                            {selectedGroup && selectedGroup.role === 'ADMIN' ? (
                                 <>
                                     <Link href={`/group/${selectedGroup.idGroup}/members`}>
                                         <DropdownMenuItem>

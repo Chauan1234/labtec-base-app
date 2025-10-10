@@ -45,15 +45,19 @@ export default function ManageMembers() {
         }
 
         // não permitir alterar role do owner
-        if (selectedGroup.owner === `${firstName} ${lastName}`) {
+        if (selectedGroup.ownerGroup === u.name) {
             toast.error("O owner do grupo não pode ter sua função alterada.", { closeButton: true });
+            return;
+        }
+        if (u.name === `${firstName} ${lastName}`) {
+            toast.error("Você não pode alterar sua própria função.", { closeButton: true });
             return;
         }
 
         const newRole = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
         const updated = members.map(m => m.idUser === u.idUser ? { ...m, role: newRole } : m);
         setMembers(updated);
-        toast.success(`Função de ${u.nameUser} atualizada.`, { closeButton: true });
+        toast.success(`Função de ${u.username} atualizada.`, { closeButton: true });
 
         try {
             await alterRoleUser(selectedGroup.idGroup, u.idUser, newRole, token);
@@ -71,23 +75,32 @@ export default function ManageMembers() {
                 <TableRow>
                     <TableHead>Nome</TableHead>
                     <TableHead>Função</TableHead>
+                    <TableHead>Email</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {members.map((m) => (
-                    <TableRow key={m.idUser}>
-                        <TableCell>{m.nameUser}</TableCell>
-                        <TableCell>{m.role.toLowerCase()}</TableCell>
-                        <TableCell>
-                            <MemberActions
-                                user={m}
-                                onToggleRole={handleAlterRole}
-                                disabled={!!selectedGroup && m.idUser === selectedGroup.owner}
-                            />
-                        </TableCell>
-                    </TableRow>
-                ))}
+                {members.map((m) => {
+                    const ownerName = selectedGroup?.ownerGroup;
+                    const memberName = m.nameUser;
+                    const isMemberOwner = ownerName === memberName;
+                    const isSelf = memberName === `${firstName} ${lastName}`;
+
+                    return (
+                        <TableRow key={m.idUser}>
+                            <TableCell>{m.username}</TableCell>
+                            <TableCell>{m.role.toLowerCase()}</TableCell>
+                            <TableCell>{m.email}</TableCell>
+                            <TableCell>
+                                <MemberActions
+                                    user={m}
+                                    onToggleRole={handleAlterRole}
+                                    disabled={isMemberOwner || isSelf}
+                                />
+                            </TableCell>
+                        </TableRow>
+                    );
+                })}
             </TableBody>
         </Table>
     )
