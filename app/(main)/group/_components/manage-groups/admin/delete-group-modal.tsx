@@ -15,6 +15,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from "@/components/ui/input";
 
 // Props
 interface ExcluirGrupoModalProps {
@@ -27,6 +28,12 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
 
     const { selectedGroup } = useGroup();
 
+    React.useEffect(() => {
+        if (!open) {
+            setConfirmText('');
+        }
+    })
+
     function handleExcluir() {
         onOpenChange?.(false);
         setConfirmText('');
@@ -34,7 +41,7 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='gap-0 sm:max-w-[360px]'>
+            <DialogContent className='gap-2 sm:max-w-[360px]'>
                 <DialogHeader className='mb-2 gap-0'>
                     <DialogTitle className='flex items-center gap-1'>
                         <CircleAlert className='h-5 w-5 text-destructive' />
@@ -46,11 +53,11 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
                 </DialogHeader>
 
                 <div className="mb-3">
-                    <input
+                    <Input
                         value={confirmText}
                         onChange={(e) => setConfirmText(e.target.value)}
                         placeholder="Nome do grupo"
-                        className="w-full rounded-md border p-2 text-sm focus:outline-none"
+                        className="w-full rounded-md border px-3 text-sm focus:outline-none"
                     />
                 </div>
 
@@ -68,7 +75,7 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
                         size="sm"
                         className='cursor-pointer'
                         onClick={handleExcluir}
-                        disabled={confirmText !== selectedGroup?.name}
+                        disabled={confirmText !== selectedGroup?.nameGroup}
                     >
                         Excluir
                     </Button>

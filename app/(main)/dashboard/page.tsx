@@ -1,5 +1,10 @@
 import { SectionCards } from "./_components/section-cards"
 
+export const metadata = {
+    title: "Dashboard",
+    description: "Página inicial do sistema.",
+}
+
 export default function PageDashboard() {
 
     return (

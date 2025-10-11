@@ -12,8 +12,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Field, FieldGroup } from '@/components/ui/field';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -57,7 +57,7 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
         // quando o modal abrir, preencher o form com o nome atual do grupo
         if (open) {
             form.reset({
-                nomeGrupo: selectedGroup?.name ?? '',
+                nomeGrupo: selectedGroup?.nameGroup ?? '',
             })
         } else {
             // quando fechar, limpar erros e resetar (assim evita de mostrar erros ao reabrir)
@@ -76,6 +76,10 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
             }
             if (!selectedGroup) {
                 console.warn("Nenhum grupo selecionado ao tentar renomear");
+                return;
+            }
+            if (data.nomeGrupo === selectedGroup.nameGroup) {
+                toast.error("O novo nome do grupo deve ser diferente do atual.", { closeButton: true });
                 return;
             }
 
@@ -107,7 +111,7 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
             <Form {...form}>
                 <DialogContent className='gap-0 sm:max-w-[360px]'>
                     <form onSubmit={form.handleSubmit(formSubmit)}>
-                        <FieldGroup className='gap-2'>
+                        <FieldGroup className='gap-3'>
                             <DialogHeader className='mb-2 gap-0'>
                                 <DialogTitle className='flex items-center gap-2'>
                                     <CircleAlert className='h-5 w-5 text-primary' />
@@ -126,7 +130,7 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
                                             <FormControl>
                                                 <Input
                                                     type='text'
-                                                    className='w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                                                    className='w-full rounded-md border px-3 text-sm focus:outline-none'
                                                     placeholder='Nome do grupo'
                                                     {...field}
                                                 />

@@ -11,9 +11,8 @@ import { useGroup } from '@/contexts/GroupContext';
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { SidebarInset, SidebarTrigger, } from '@/components/ui/sidebar';
-import { CircleAlert, LogOut, Settings } from 'lucide-react';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { SidebarTrigger, } from '@/components/ui/sidebar';
+import { CircleAlert, LogOut, Moon, Settings } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,6 +31,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import Link from 'next/link';
+import ThemeSwitcher from './_components/theme-switcher';
 
 
 export default function AppHeader() {
@@ -51,18 +51,19 @@ export default function AppHeader() {
                     />
                 </div>
                 <div className='flex flex-1 items-center justify-end'>
+                    <ThemeSwitcher />
                     <DropdownMenu>
                         <DropdownMenuTrigger>
-                            <Avatar className='cursor-pointer'>
-                                <AvatarFallback>
+                            <Avatar className='cursor-pointer rounded-lg'>
+                                <AvatarFallback className='rounded-lg'>
                                     {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : username?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="bottom" align="end">
                             <DropdownMenuLabel className='flex items-center gap-2'>
-                                <Avatar>
-                                    <AvatarFallback>
+                                <Avatar className='rounded-lg'>
+                                    <AvatarFallback className='rounded-lg'>
                                         {firstName && lastName ? `${firstName.charAt(0)}${lastName.charAt(0)}` : username?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>

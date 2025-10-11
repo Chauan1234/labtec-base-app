@@ -95,7 +95,7 @@ export function NavHeader({
                                             App
                                         </span>
                                     </span>
-                                    <span className="text-xs text-muted-foreground">{Package.version}</span>
+                                    <span className="text-xs text-muted-foreground">v{Package.version}</span>
                                 </div>
                             </div>
                         )}

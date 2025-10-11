@@ -26,7 +26,10 @@ const geistMono = Geist_Mono({
 
 // Metadata
 export const metadata: Metadata = {
-  title: "BaseApp",
+  title: {
+    template: "%s | BaseApp",
+    default: "BaseApp",
+  },
   description: "BaseApp - Sistema para servir de base para novos projetos.",
 };
 
