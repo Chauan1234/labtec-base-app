@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function Page() {
     return (
-        <div>
+        <div className="px-4 sm:px-6 lg:px-8">
             <ManageMembers />
         </div>
     )

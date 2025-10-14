@@ -7,6 +7,9 @@ import { useGroup } from "@/contexts/GroupContext";
 import React from "react";
 import { toast } from "sonner";
 import { MemberActions } from "@/app/(main)/itens/_components/data-table/columns";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Plus, Search } from "lucide-react";
 
 export default function ManageMembers() {
     const { isAuthenticated, token, firstName, lastName } = useAuth();
@@ -70,38 +73,67 @@ export default function ManageMembers() {
     }
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Função</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead></TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {members.map((m) => {
-                    const ownerName = selectedGroup?.ownerGroup;
-                    const memberName = m.nameUser;
-                    const isMemberOwner = ownerName === memberName;
-                    const isSelf = memberName === `${firstName} ${lastName}`;
+        <div className="space-y-3">
+            <div className="flex flex-row justify-between gap-2">
+                <div className="relative max-w-sm">
+                    <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
+                        <Search className="size-4" aria-hidden="true" />
+                    </div>
+                    <Input
+                        placeholder={`Buscar`}
+                        disabled={loading || members.length === 0}
+                        className="h-8 pl-9"
+                    />
+                </div>
 
-                    return (
-                        <TableRow key={m.idUser}>
-                            <TableCell>{m.username}</TableCell>
-                            <TableCell>{m.role.toLowerCase()}</TableCell>
-                            <TableCell>{m.email}</TableCell>
-                            <TableCell>
-                                <MemberActions
-                                    user={m}
-                                    onToggleRole={handleAlterRole}
-                                    disabled={isMemberOwner || isSelf}
-                                />
-                            </TableCell>
-                        </TableRow>
-                    );
-                })}
-            </TableBody>
-        </Table>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={loading}
+                >
+                    <Plus className="mr-2 size-4" />
+                    <span>Adicionar Membro</span>
+                </Button>
+            </div>
+
+            {/* Tabela de membros */}
+            <div className="rounded-md border">
+                <div className="max-h-[530px] relative overflow-auto">
+                    <Table>
+                        <TableHeader className="bg-muted rounded-md sticky top-0">
+                            <TableRow>
+                                <TableHead className="rounded-md">Nome</TableHead>
+                                <TableHead>Função</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {members.map((m) => {
+                                const ownerName = selectedGroup?.ownerGroup;
+                                const memberName = m.nameUser;
+                                const isMemberOwner = ownerName === memberName;
+                                const isSelf = memberName === `${firstName} ${lastName}`;
+
+                                return (
+                                    <TableRow key={m.idUser}>
+                                        <TableCell>{m.username}</TableCell>
+                                        <TableCell>{m.role.toLowerCase()}</TableCell>
+                                        <TableCell>{m.email}</TableCell>
+                                        <TableCell>
+                                            <MemberActions
+                                                user={m}
+                                                onToggleRole={handleAlterRole}
+                                                disabled={isMemberOwner || isSelf}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+        </div>
     )
 }

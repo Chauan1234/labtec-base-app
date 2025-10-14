@@ -30,7 +30,7 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
     return [
         {
             accessorKey: 'número',
-            header: '',
+            header: 'ID',
             cell: ({ row }) => (
                 <span>{row.index + 1}</span>
             ),

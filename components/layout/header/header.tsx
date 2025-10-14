@@ -31,7 +31,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import Link from 'next/link';
-import ThemeSwitcher from './_components/theme-switcher';
+import ThemeSwitcher from '../../../app/(main)/user-config/_components/theme-switcher';
 
 
 export default function AppHeader() {
@@ -51,7 +51,6 @@ export default function AppHeader() {
                     />
                 </div>
                 <div className='flex flex-1 items-center justify-end'>
-                    <ThemeSwitcher />
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                             <Avatar className='cursor-pointer rounded-lg'>

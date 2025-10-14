@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, Camera, User } from 'lucide-react';
+import { Settings, Camera, User, Palette } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -27,6 +27,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import ThemeSwitcher from './_components/theme-switcher';
 
 const baseSchema = z.object({
     firstName: z.string()
@@ -50,7 +53,7 @@ const baseSchema = z.object({
 
 export default function ClientPage() {
     const router = useRouter();
-    
+
     type FormValues = z.infer<typeof baseSchema>;
 
     const form = useForm<FormValues>({
@@ -277,6 +280,30 @@ export default function ClientPage() {
                                     Salvar Alterações
                                 </Button>
                             </CardFooter>
+                        </Card>
+
+                        {/* Seção de Aparência */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Palette className="h-5 w-5" />
+                                    Aparência
+                                </CardTitle>
+                                <CardDescription>
+                                    Personalize a aparência da aplicação
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                        <Label htmlFor="dark-mode">Tema</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            Altere o tema para reduzir o cansaço visual
+                                        </p>
+                                    </div>
+                                    <ThemeSwitcher />
+                                </div>
+                            </CardContent>
                         </Card>
                     </div>
                 )}

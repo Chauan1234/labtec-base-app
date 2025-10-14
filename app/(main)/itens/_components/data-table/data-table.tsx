@@ -220,12 +220,12 @@ export function DataTable<TData, TValue>({
             <div className="rounded-md border">
                 <div className="max-h-[530px] relative overflow-auto">
                     <Table>
-                        <TableHeader className="bg-muted sticky top-0">
+                        <TableHeader className="bg-muted rounded-md sticky top-0">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
                                         return (
-                                            <TableHead key={header.id}>
+                                            <TableHead key={header.id} className="rounded-md">
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
