@@ -1,4 +1,4 @@
-import ManageMembers from "@/app/(main)/group/_components/manage-groups/admin/manage-members"
+import ClientPage from "./page.client"
 
 export const metadata = {
     title: "Membros do Grupo",
@@ -8,7 +8,7 @@ export const metadata = {
 export default function Page() {
     return (
         <div className="px-4 sm:px-6 lg:px-8">
-            <ManageMembers />
+            <ClientPage />
         </div>
     )
 }

@@ -9,17 +9,26 @@ import { toast } from "sonner";
 import { MemberActions } from "@/app/(main)/itens/_components/data-table/columns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { MailPlusIcon, SearchIcon } from "lucide-react";
+import InviteModal from "../../_components/manage-groups/admin/invite-member-modal";
+import { useRouter } from "next/navigation";
 
-export default function ManageMembers() {
+export default function ClientPage() {
     const { isAuthenticated, token, firstName, lastName } = useAuth();
     const { selectedGroup } = useGroup();
+    const router = useRouter();
 
     const [members, setMembers] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(false);
+    const [invite, setInvite] = React.useState(false);
 
     async function loadMembers() {
         if (!selectedGroup) {
+            setMembers([]);
+            return;
+        }
+
+        if (selectedGroup.role && selectedGroup.role !== "ADMIN") {
             setMembers([]);
             return;
         }
@@ -36,6 +45,19 @@ export default function ManageMembers() {
             setLoading(false);
         }
     }
+
+    React.useEffect(() => {
+        if (!selectedGroup) return;
+        if (!isAuthenticated) {
+            router.push("/dashboard");
+            return;
+        }
+
+        if (selectedGroup.role && selectedGroup.role !== "ADMIN") {
+            toast.error("Acesso negado: apenas administradores podem gerenciar membros.", { closeButton: true });
+            router.push("/dashboard");
+        }
+    }, [selectedGroup, isAuthenticated, router]);
 
     React.useEffect(() => {
         loadMembers();
@@ -77,7 +99,7 @@ export default function ManageMembers() {
             <div className="flex flex-row justify-between gap-2">
                 <div className="relative max-w-sm">
                     <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
-                        <Search className="size-4" aria-hidden="true" />
+                        <SearchIcon className="size-4" aria-hidden="true" />
                     </div>
                     <Input
                         placeholder={`Buscar`}
@@ -90,9 +112,10 @@ export default function ManageMembers() {
                     variant="outline"
                     size="sm"
                     disabled={loading}
+                    onClick={() => setInvite(true)}
                 >
-                    <Plus className="mr-2 size-4" />
-                    <span>Adicionar Membro</span>
+                    <MailPlusIcon className="mr-1 size-4" />
+                    <span>Convidar</span>
                 </Button>
             </div>
 
@@ -105,7 +128,7 @@ export default function ManageMembers() {
                                 <TableHead className="rounded-md">Nome</TableHead>
                                 <TableHead>Função</TableHead>
                                 <TableHead>Email</TableHead>
-                                <TableHead></TableHead>
+                                <TableHead className="rounded-md"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -134,6 +157,8 @@ export default function ManageMembers() {
                     </Table>
                 </div>
             </div>
+            <InviteModal open={invite} onOpenChange={setInvite} />
         </div>
+
     )
 }

@@ -15,7 +15,7 @@ import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups
 import { useGroup } from "@/contexts/GroupContext";
 
 // UI Components
-import { LayoutDashboard, TableOfContents } from "lucide-react";
+import { LayoutDashboardIcon, TableOfContentsIcon } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader} from "../../ui/sidebar";
 
 // Dados estáticos para popular o sidebar
@@ -24,12 +24,12 @@ const data = {
         {
             title: "Home",
             url: "/dashboard",
-            icon: LayoutDashboard,
+            icon: LayoutDashboardIcon,
         },
         {
             title: "Itens",
             url: "/itens",
-            icon: TableOfContents,
+            icon: TableOfContentsIcon,
         }
     ],
 };

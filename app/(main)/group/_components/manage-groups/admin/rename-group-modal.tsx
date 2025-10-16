@@ -3,7 +3,7 @@ import React from 'react';
 
 // UI Components
 import { Button } from '../../../../../../components/ui/button';
-import { CircleAlert } from 'lucide-react';
+import { CircleAlertIcon, EditIcon } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -108,23 +108,29 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <Form {...form}>
-                <DialogContent className='gap-0 sm:max-w-[360px]'>
-                    <form onSubmit={form.handleSubmit(formSubmit)}>
-                        <FieldGroup className='gap-3'>
-                            <DialogHeader className='mb-2 gap-0'>
-                                <DialogTitle className='flex items-center gap-2'>
-                                    <CircleAlert className='h-5 w-5 text-primary' />
-                                    <span>Renomear grupo</span>
-                                </DialogTitle>
-                                <DialogDescription className='text-sm text-muted-foreground mt-1'>
-                                    Informe o novo nome do grupo.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup>
+            <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+                <div className="flex flex-col md:flex-row">
+                    <div className="flex items-center justify-center p-6 bg-card md:w-20">
+                        <div className="rounded-full bg-background p-2 shadow-md">
+                            <EditIcon className="size-7 text-primary" />
+                        </div>
+                    </div>
+
+                    <div className="p-6 flex-1">
+                        <DialogHeader className="p-0 mb-1">
+                            <DialogTitle className="text-lg font-semibold">Renomear Grupo</DialogTitle>
+                        </DialogHeader>
+                        <div className="text-sm text-muted-foreground mb-4">
+                            <DialogDescription>
+                                Informe o novo nome do grupo.
+                            </DialogDescription>
+                        </div>
+
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(formSubmit)} className='space-y-4'>
                                 <FormField
                                     control={form.control}
-                                    name="nomeGrupo"
+                                    name='nomeGrupo'
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
@@ -132,6 +138,8 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
                                                     type='text'
                                                     className='w-full rounded-md border px-3 text-sm focus:outline-none'
                                                     placeholder='Nome do grupo'
+                                                    autoFocus
+                                                    required
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -139,42 +147,38 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
                                         </FormItem>
                                     )}
                                 />
-                            </FieldGroup>
-                            <DialogFooter className="gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className='hover:bg-secondary/20 hover:text-primary cursor-pointer'
-                                    onClick={() => onOpenChange?.(false)}
-                                >
-                                    Cancelar
-                                </Button>
-                                <Button
-                                    type='submit'
-                                    variant="default"
-                                    size="sm"
-                                    className='hover:opacity-90 cursor-pointer'
-                                    disabled={
-                                        !open ||
-                                        !form.formState.isValid ||
-                                        !isAuthenticated ||
-                                        !selectedGroup
-                                    }
-                                >
-                                    {isSubmitting ? (
-                                        <div className='flex flex-row items-center justify-center gap-2'>
-                                            <Spinner />
-                                            <span>Salvando...</span>
-                                        </div>
-                                    ) : (
-                                        <span>Salvar</span>
-                                    )}
-                                </Button>
-                            </DialogFooter>
-                        </FieldGroup>
-                    </form>
-                </DialogContent>
-            </Form>
-        </Dialog >
+                                <DialogFooter className="justify-end gap-2">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => onOpenChange?.(false)}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        type='submit'
+                                        className='hover:opacity-90 cursor-pointer'
+                                        disabled={
+                                            !open ||
+                                            !form.formState.isValid ||
+                                            !isAuthenticated ||
+                                            !selectedGroup
+                                        }
+                                    >
+                                        {isSubmitting ? (
+                                            <div className='flex flex-row items-center justify-center gap-2'>
+                                                <Spinner />
+                                                <span>Salvando...</span>
+                                            </div>
+                                        ) : (
+                                            <span>Salvar</span>
+                                        )}
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     )
 }

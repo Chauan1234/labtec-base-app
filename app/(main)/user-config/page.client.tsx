@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Spinner } from "@/components/ui/spinner";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, Camera, User, Palette } from 'lucide-react';
+import { SettingsIcon, CameraIcon, UserIcon, PaletteIcon } from 'lucide-react';
 import {
     Card,
     CardContent,
@@ -140,7 +140,7 @@ export default function ClientPage() {
                     <div className="max-w-4xl mx-auto space-y-6">
                         {/* Título da página */}
                         <div className="flex items-center gap-3 mb-6">
-                            <Settings className="h-6 w-6 text-primary" />
+                            <SettingsIcon className="h-6 w-6 text-primary" />
                             <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
                         </div>
 
@@ -148,7 +148,7 @@ export default function ClientPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <User className="h-5 w-5" />
+                                    <UserIcon className="h-5 w-5" />
                                     Perfil do Usuário
                                 </CardTitle>
                                 <CardDescription>
@@ -156,7 +156,7 @@ export default function ClientPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col xs:flex-row items-center gap-4">
                                     <Avatar className="h-16 w-16">
                                         {profilePicture ? (
                                             <AvatarImage src={profilePicture} alt="Foto de perfil" />
@@ -176,7 +176,7 @@ export default function ClientPage() {
                                     <label className="cursor-pointer">
                                         <Button variant="outline" size="sm" asChild>
                                             <span>
-                                                <Camera className="h-4 w-4 mr-2" />
+                                                <CameraIcon className="h-4 w-4 mr-2" />
                                                 Alterar Foto
                                             </span>
                                         </Button>
@@ -286,7 +286,7 @@ export default function ClientPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Palette className="h-5 w-5" />
+                                    <PaletteIcon className="h-5 w-5" />
                                     Aparência
                                 </CardTitle>
                                 <CardDescription>

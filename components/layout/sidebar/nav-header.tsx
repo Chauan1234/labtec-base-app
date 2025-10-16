@@ -42,14 +42,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     CheckIcon,
-    ChevronsUpDown,
-    CirclePlus,
-    EllipsisVertical,
-    LogOut,
-    Pencil,
-    Settings,
-    Trash2,
-    UserRoundCog,
+    ChevronsUpDownIcon,
+    EllipsisVerticalIcon,
+    LogOutIcon,
+    PencilIcon,
+    SettingsIcon,
+    Trash2Icon,
+    UserRoundCogIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -104,7 +103,7 @@ export function NavHeader({
             </SidebarMenu>
 
             {/* Select Group */}
-            <SidebarMenu className={cn("flex items-center gap-1 min-w-0",
+            <SidebarMenu className={cn("flex items-center gap-2 min-w-0",
                 state === 'collapsed'
                     ? "flex-col"
                     : "flex-row"
@@ -131,11 +130,11 @@ export function NavHeader({
                                     )}
                                 >
                                     {state === "collapsed" ? (
-                                        <ChevronsUpDown className="h-4 w-4 shrink-0" />
+                                        <ChevronsUpDownIcon className="h-4 w-4 shrink-0" />
                                     ) : (
                                         <>
                                             {value ? value : (selectedGroup ? selectedGroup.nameGroup : <span>Selecionar Grupo</span>)}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </>
                                     )}
                                 </Button>
@@ -204,7 +203,7 @@ export function NavHeader({
                                         state === "collapsed" ? "flex items-center justify-center rounded-md" : ""
                                     )}
                                 >
-                                    <EllipsisVertical className="h-4 w-4" />
+                                    <EllipsisVerticalIcon className="h-4 w-4" />
                                 </Button>
                             </div>
                         </DropdownMenuTrigger>
@@ -223,37 +222,37 @@ export function NavHeader({
                                 <>
                                     <Link href={`/group/${selectedGroup.idGroup}/members`}>
                                         <DropdownMenuItem>
-                                            <UserRoundCog className='focus:text-primary' />
+                                            <UserRoundCogIcon className='focus:text-primary' />
                                             Gerenciar membros
                                         </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuItem onClick={() => setShowRenomear(true)}>
-                                        <Pencil className='focus:text-primary' />
+                                        <PencilIcon className='focus:text-primary' />
                                         Renomear
                                     </DropdownMenuItem>
                                     <DropdownMenuItem>
-                                        <Settings className='focus:text-primary' />
+                                        <SettingsIcon className='focus:text-primary' />
                                         Configurações
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         variant="destructive"
                                         onClick={() => setShowExcluir(true)}
                                     >
-                                        <Trash2 />
+                                        <Trash2Icon />
                                         Excluir grupo
                                     </DropdownMenuItem>
                                 </>
                             ) : (
                                 <>
                                     <DropdownMenuItem>
-                                        <Settings className="focus:text-primary" />
+                                        <SettingsIcon className="focus:text-primary" />
                                         Configurações
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         variant="destructive"
                                         onClick={() => setShowSair(true)}
                                     >
-                                        <LogOut />
+                                        <LogOutIcon />
                                         Sair do grupo
                                     </DropdownMenuItem>
                                 </>

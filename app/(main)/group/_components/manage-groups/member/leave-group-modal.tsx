@@ -3,7 +3,7 @@ import React from "react";
 
 // UI Components
 import { Button } from '../../../../../../components/ui/button';
-import { CircleAlert } from 'lucide-react';
+import { CircleAlertIcon } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -33,7 +33,7 @@ export function SairGrupoModal({ open, onOpenChange }: SairGrupoModalProps) {
             <DialogContent className='gap-0 sm:max-w-[360px]'>
                 <DialogHeader className='mb-3 gap-0'>
                     <DialogTitle className='flex items-center gap-1'>
-                        <CircleAlert className='h-5 w-5 text-destructive' />
+                        <CircleAlertIcon className='h-5 w-5 text-destructive' />
                         <span>Sair do grupo</span>
                     </DialogTitle>
                     <DialogDescription className='text-sm text-muted-foreground mt-1'>

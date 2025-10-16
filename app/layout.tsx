@@ -1,12 +1,9 @@
-// RootLayout Component
-import { AuthProvider } from "@/contexts/AuthContext";
-import { GroupProvider } from "@/contexts/GroupContext";
-
 // Components
 import AppHeader from "@/components/layout/header/header";
 import AppSidebar from "@/components/layout/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import Providers from "./providers";
 
 // Styles and Metadata
 import "./globals.css";
@@ -43,28 +40,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Providers */}
-        <AuthProvider>
-          {
-            // Sidebar and Group Providers
-            <SidebarProvider>
-              <GroupProvider>
+        <Providers>
 
-                {/* Group Sidebar */}
-                <AppSidebar />
-                <SidebarInset>
-                  <AppHeader />
-                  <div className="h-full px-4 pt-6 pb-6 sm:px-6 lg:px-8">
-                    {children}
-                  </div>
-                </SidebarInset>
-                {/* global toaster for sonner */}
-                <Toaster position="top-center" theme="light" richColors />
+          {/* Sidebar */}
+          <AppSidebar />
 
-              </GroupProvider>
-            </SidebarProvider>
-          }
-        </AuthProvider>
+          {/* Conteúdo Principal */}
+          <SidebarInset>
+
+            {/* Header */}
+            <AppHeader />
+
+            {/* Conteúdo da página */}
+            <div className="h-full px-4 pt-6 pb-6 sm:px-6 lg:px-8">
+              {children}
+            </div>
+          </SidebarInset>
+
+          {/* Toaster para notificações */}
+          <Toaster position="top-center" theme="light" richColors />
+        </Providers>
       </body>
     </html>
   );

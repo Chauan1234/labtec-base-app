@@ -1,7 +1,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CircleAlert } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { CircleAlertIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
 import { deleteItem } from "@/lib/items-controller/items";
@@ -56,7 +63,7 @@ export default function DeleteItemModal({ open, onOpenChange, idItem, onDeleted 
             <DialogContent className="gap-0 sm:max-w-[360px]">
                 <DialogHeader className="mb-2 gap-0">
                     <DialogTitle className="flex items-center gap-1">
-                        <CircleAlert className="size-5 text-destructive" />
+                        <CircleAlertIcon className="size-5 text-destructive" />
                         <span>Excluir item</span>
                     </DialogTitle>
                     <DialogDescription className="text-sm text-muted-foreground mt-1">

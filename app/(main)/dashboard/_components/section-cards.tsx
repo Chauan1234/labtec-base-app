@@ -1,6 +1,6 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUpIcon, TrendingDownIcon } from "lucide-react";
 
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function SectionCards() {
     return (
@@ -12,7 +12,7 @@ export function SectionCards() {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">
-                        Tendências em alta neste mês <TrendingUp className="size-4" />
+                        Tendências em alta neste mês <TrendingUpIcon className="size-4" />
                     </div>
                     <div className="text-muted-foreground">Visitantes nos últimos 6 meses</div>
                 </CardFooter>
@@ -24,7 +24,7 @@ export function SectionCards() {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">
-                        Queda de 20% neste período <TrendingDown className="size-4" />
+                        Queda de 20% neste período <TrendingDownIcon className="size-4" />
                     </div>
                     <div className="text-muted-foreground">Aquisições precisam de atenção</div>
                 </CardFooter>
@@ -36,7 +36,7 @@ export function SectionCards() {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">
-                        Forte retenção de usuários <TrendingUp className="size-4" />
+                        Forte retenção de usuários <TrendingUpIcon className="size-4" />
                     </div>
                     <div className="text-muted-foreground">Engajamento excedendo as metas</div>
                 </CardFooter>
@@ -48,7 +48,7 @@ export function SectionCards() {
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">
-                        Aumento constante do desempenho <TrendingUp className="size-4" />
+                        Aumento constante do desempenho <TrendingUpIcon className="size-4" />
                     </div>
                     <div className="text-muted-foreground">Atende às projeções de crescimento</div>
                 </CardFooter>

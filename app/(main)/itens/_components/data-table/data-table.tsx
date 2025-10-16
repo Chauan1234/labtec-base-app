@@ -19,9 +19,16 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-}
-    from "@/components/ui/table";
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus, Search } from "lucide-react";
+} from "@/components/ui/table";
+import {
+    ChevronDownIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ChevronsLeftIcon,
+    ChevronsRightIcon,
+    PlusIcon,
+    SearchIcon,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -132,7 +139,7 @@ export function DataTable<TData, TValue>({
                 <div className="flex items-center space-x-2">
                     <div className="relative">
                         <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
-                            <Search className="size-4" aria-hidden="true" />
+                            <SearchIcon className="size-4" aria-hidden="true" />
                         </div>
                         <Input
                             placeholder={`Buscar`}
@@ -159,7 +166,7 @@ export function DataTable<TData, TValue>({
                                                 : `${dateRange.to?.toLocaleDateString()}`
                                         : <span>Filtrar por data</span>
                                     }
-                                    <ChevronDown />
+                                    <ChevronDownIcon />
                                 </Button>
                             </div>
                         </PopoverTrigger>
@@ -210,7 +217,7 @@ export function DataTable<TData, TValue>({
                         variant={"outline"}
                         size={"sm"}
                     >
-                        <Plus className="h-4 w-4" />
+                        <PlusIcon className="h-4 w-4" />
                         Adicionar Item
                     </Button>
                 </Link>
@@ -317,7 +324,7 @@ export function DataTable<TData, TValue>({
                         disabled={!table.getCanPreviousPage()}
                     >
                         <span className="sr-only">Primeira página</span>
-                        <ChevronsLeft />
+                        <ChevronsLeftIcon />
                     </Button>
                     <Button
                         variant="outline"
@@ -327,7 +334,7 @@ export function DataTable<TData, TValue>({
                         disabled={!table.getCanPreviousPage()}
                     >
                         <span className="sr-only">Página anterior</span>
-                        <ChevronLeft />
+                        <ChevronLeftIcon />
                     </Button>
                     <Button
                         variant="outline"
@@ -337,7 +344,7 @@ export function DataTable<TData, TValue>({
                         disabled={!table.getCanNextPage()}
                     >
                         <span className="sr-only">Próxima página</span>
-                        <ChevronRight />
+                        <ChevronRightIcon />
                     </Button>
                     <Button
                         variant="outline"
@@ -347,7 +354,7 @@ export function DataTable<TData, TValue>({
                         disabled={!table.getCanNextPage()}
                     >
                         <span className="sr-only">Última página</span>
-                        <ChevronsRight />
+                        <ChevronsRightIcon />
                     </Button>
                 </div>
             </div>

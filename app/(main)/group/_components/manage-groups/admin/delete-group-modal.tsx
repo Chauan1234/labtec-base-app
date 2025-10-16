@@ -6,16 +6,9 @@ import { useGroup } from "@/contexts/GroupContext";
 
 // UI Components
 import { Button } from '../../../../../../components/ui/button';
-import { CircleAlert } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { TriangleAlertIcon } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 // Props
 interface ExcluirGrupoModalProps {
@@ -40,19 +33,22 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className='gap-2 sm:max-w-[360px]'>
-                <DialogHeader className='mb-2 gap-0'>
-                    <DialogTitle className='flex items-center gap-1'>
-                        <CircleAlert className='h-5 w-5 text-destructive' />
-                        <span>Excluir grupo</span>
-                    </DialogTitle>
-                    <DialogDescription className='text-sm text-muted-foreground mt-1'>
-                        Para confirmar, digite o nome do grupo.
-                    </DialogDescription>
-                </DialogHeader>
+        <AlertDialog open={open} onOpenChange={onOpenChange}>
+            <AlertDialogContent className='gap-2'>
+                <AlertDialogHeader className='mb-2 gap-0'>
+                    <div className='bg-destructive/10 mx-auto mb-2 flex size-12 items-center justify-center rounded-full'>
+                        <TriangleAlertIcon className='text-destructive size-6' />
+                    </div>
+                    <AlertDialogTitle className="text-center">Tem certeza que deseja excluir este grupo?</AlertDialogTitle>
+                    <AlertDialogDescription className='text-sm text-muted-foreground text-center mt-1'>
+                        Esta ação não pode ser desfeita. Isso excluirá permanentemente o grupo e removerá o acesso de todos os seus membros.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
 
                 <div className="mb-3">
+                    <p className="text-sm text-muted-foreground mb-1">
+                        Para confirmar, digite <strong className="font-medium">{selectedGroup?.nameGroup}</strong> no campo abaixo.
+                    </p>
                     <Input
                         value={confirmText}
                         onChange={(e) => setConfirmText(e.target.value)}
@@ -61,26 +57,19 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
                     />
                 </div>
 
-                <DialogFooter className="gap-2">
+                <AlertDialogFooter className="gap-2">
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <Button
-                        variant="outline"
-                        size="sm"
-                        className='hover:bg-secondary/20 hover:text-primary cursor-pointer'
-                        onClick={() => onOpenChange?.(false)}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        variant="logout"
-                        size="sm"
+                        variant="destructive"
+                        size="default"
                         className='cursor-pointer'
                         onClick={handleExcluir}
                         disabled={confirmText !== selectedGroup?.nameGroup}
                     >
                         Excluir
                     </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
