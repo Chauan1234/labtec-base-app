@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { buildColumns, Items } from "./_components/data-table/columns";
-import { DataTable } from "./_components/data-table/data-table";
+import { buildColumns, Items } from "../_components/columns";
+import { DataTable } from "../_components/data-table";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
 import getItems from "@/lib/items-controller/items";

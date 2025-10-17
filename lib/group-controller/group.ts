@@ -54,7 +54,7 @@ export async function renameGroup(idGroup: string, newName: string, token?: stri
 }
 
 // convidar usuário para o grupo
-export async function inviteUser(idGroup: string, email: string, role: 'admin' | 'user', token?: string | null) {
+export async function sendInvite(idGroup: string | undefined, email: string, role: 'ADMIN' | 'USER', token?: string | null) {
   const res = await axios.post(`${GROUPS_URL}/invite/${idGroup}`, {
     email,
     role

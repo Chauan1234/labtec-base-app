@@ -5,31 +5,52 @@ import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGroup } from "@/contexts/GroupContext";
+import { sendInvite } from "@/lib/group-controller/group";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
 
 interface InviteModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 }
 
-type FormValues = {
-    email: string;
-    role: string;
-}
+const baseSchema = z.object({
+    email: z.email({ pattern: z.regexes.email, message: "Digite um email válido" }),
+    role: z.enum(['ADMIN', 'USER']).nonoptional({ message: "A função é obrigatória" }),
+})
 
 export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
-    const form = useForm<FormValues>({ defaultValues: { email: '', role: '' } });
+    type FormValues = z.infer<typeof baseSchema>;
+
+    const form = useForm<FormValues>({
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
+        resolver: zodResolver(baseSchema),
+        defaultValues: {
+            email: '',
+            role: 'USER'
+        }
+    });
     const [submitting, setSubmitting] = React.useState(false);
+
+    const { token } = useAuth();
+    const { selectedGroup } = useGroup();
 
     async function onSubmit(data: FormValues) {
         try {
             setSubmitting(true);
-            // chamada para enviar o convite
+
+            await sendInvite(selectedGroup?.idGroup, data.email, data.role as 'ADMIN' | 'USER', token);
+
             console.log("Enviando convite para:", data.email);
-            // await sendInvite(data.email);
-            toast.success("Convite enviado com sucesso.", { closeButton: true });
+            toast.success(`Convite enviado para ${data.email} com sucesso.`, { closeButton: true });
+
             onOpenChange?.(false);
             form.reset();
         } catch (error) {
@@ -53,10 +74,11 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
                 </DialogHeader>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-                        <Label>Email</Label>
-                        <FieldGroup className="flex flex-row gap-3 max-w-sm">
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <FieldGroup className="max-w-xs gap-3">
+                            <Label>Email</Label>
                             <FormField
+                                control={form.control}
                                 name="email"
                                 render={({ field }) => {
                                     return (
@@ -69,10 +91,16 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
                                     )
                                 }}
                             />
+                            <Label className="mt-2">Função</Label>
                             <FormField
+                                control={form.control}
                                 name="role"
                                 render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value as string}>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value as string}
+                                        required
+                                    >
                                         <SelectTrigger className="min-w-[140px]">
                                             <SelectValue placeholder="Função" />
                                         </SelectTrigger>
@@ -95,7 +123,13 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
                                 type="submit"
                                 disabled={submitting || !form.formState.isValid || !form.formState.isDirty}
                             >
-                                Enviar convite
+                                {submitting
+                                    ? (
+                                        <>
+                                            <Spinner className="size-4" />
+                                            <span>Enviando...</span>
+                                        </>
+                                    ) : 'Enviar convite'}
                             </Button>
                         </DialogFooter>
                     </form>

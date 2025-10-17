@@ -1,3 +1,4 @@
+// ...existing code...
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -109,7 +110,7 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
 
 export type Users = {
     idUser: string,
-    name: string,
+    nameUser: string,
     username: string,
     email: string,
     role: 'ADMIN' | 'USER',
@@ -128,7 +129,7 @@ export function MemberActions({
     const { selectedGroup } = useGroup();
 
     const ownerName = selectedGroup?.ownerGroup;
-    const userFullName = user.name;
+    const userFullName = user.nameUser;
     const isOwner = ownerName !== "" && userFullName === ownerName;
     const isSelf = userFullName === `${firstName} ${lastName}`;
 
@@ -173,12 +174,29 @@ export function buildColumnsManageMembers(handlers?: {
 }): ColumnDef<Users>[] {
     return [
         {
-            accessorKey: 'nameUser',
+            accessorKey: 'número',
+            header: '#',
+            // calcula índice global com base na página atual do TanStack Table
+            cell: ({ row, table }) => {
+                const pageIndex = table.getState().pagination.pageIndex ?? 0;
+                const pageSize = table.getState().pagination.pageSize ?? 10;
+                return <span>{pageIndex * pageSize + row.index + 1}</span>;
+            },
+        },
+        {
+            accessorKey: 'username',
             header: 'Nome',
+        },
+        {
+            accessorKey: 'email',
+            header: 'Email',
         },
         {
             accessorKey: 'role',
             header: 'Função',
+            cell: ({ row }) => (
+                <span>{String(row.getValue('role')).toLowerCase()}</span>
+            ),
         },
         {
             id: 'actions',
@@ -189,5 +207,5 @@ export function buildColumnsManageMembers(handlers?: {
                 />
             ),
         },
-    ]
+    ];
 }
