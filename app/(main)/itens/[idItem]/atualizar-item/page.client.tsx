@@ -114,8 +114,19 @@ export default function ClientPage() {
         loadItem();
     }, [idItem, selectedGroup, token]);
 
+    React.useEffect(() => {
+        if (!isAuthenticated) {
+            router.push("/login");
+        }
+        if (selectedGroup?.role !== 'ADMIN') {
+            toast.error("Acesso negado. Apenas administradores podem atualizar itens.", { closeButton: true });
+            router.push("/itens");
+        }
+
+    }, [isAuthenticated, router]);
+
     async function formSubmit(data: FormValues) {
-        if (!isAuthenticated || !selectedGroup || !idItem) return;
+        if (!isAuthenticated || !selectedGroup || !idItem || selectedGroup?.role !== 'ADMIN') return;
 
         setIsSubmitting(true);
         try {

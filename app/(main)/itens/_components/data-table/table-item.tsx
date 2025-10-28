@@ -34,16 +34,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGroup } from "@/contexts/GroupContext";
+import clsx from "clsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function TableItem<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const { selectedGroup } = useGroup();
 
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = React.useState<string>("");
@@ -136,7 +140,7 @@ export function DataTable<TData, TValue>({
             {/* Parte de Busca e Filtros */}
             <div className="flex items-center justify-between">
                 {/* Filtro Global */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-3">
                     <div className="relative">
                         <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
                             <SearchIcon className="size-4" aria-hidden="true" />
@@ -147,7 +151,7 @@ export function DataTable<TData, TValue>({
                             onChange={(event) => {
                                 table.setGlobalFilter(event.target.value);
                             }}
-                            className="h-8 pl-9 max-w-sm"
+                            className="pl-9 max-w-sm"
                         />
                     </div>
                     <Popover open={open} onOpenChange={setOpen}>
@@ -155,7 +159,6 @@ export function DataTable<TData, TValue>({
                             <div>
                                 <Button
                                     variant="outline"
-                                    size="sm"
                                     className="data-[empty=true]:text-muted-foreground w-55 justify-between text-left font-normal"
                                 >
                                     {dateRange && (dateRange.from || dateRange.to)
@@ -210,17 +213,18 @@ export function DataTable<TData, TValue>({
                     </Popover>
                 </div>
 
-
                 {/* Botão Adicionar */}
-                <Link href={"/itens/novo-item"}>
-                    <Button
-                        variant={"outline"}
-                        size={"sm"}
-                    >
-                        <PlusIcon className="h-4 w-4" />
-                        Adicionar Item
-                    </Button>
-                </Link>
+                {selectedGroup?.role === 'ADMIN' && (
+                    < Link href={"/itens/novo-item"}>
+                        <Button
+                            variant="outline"
+                        >
+                            <PlusIcon className="h-4 w-4" />
+                            Adicionar Item
+                        </Button>
+                    </Link>
+
+                )}
             </div>
 
             {/* Tabela de Dados */}
@@ -253,10 +257,21 @@ export function DataTable<TData, TValue>({
                                         data-state={row.getIsSelected() && "selected"}
                                     >
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
+                                            <TableCell key={cell.id} className={clsx(selectedGroup?.role !== 'ADMIN' && "p-0")}>
+                                                {selectedGroup?.role === 'ADMIN' ? (
+                                                    <>
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <div className="min-h-[48px] flex items-center px-2 py-3">
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </div>
                                                 )}
                                             </TableCell>
                                         ))}

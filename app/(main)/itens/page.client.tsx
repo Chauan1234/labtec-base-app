@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { buildColumns, Items } from "./_components/data-table/columns";
-import { DataTable } from "./_components/data-table/data-table";
+import { buildColumns, Items } from "./_components/data-table/columns-item";
+import { TableItem } from "./_components/data-table/table-item";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
 import getItems from "@/lib/items-controller/items";
@@ -75,7 +75,7 @@ export default function ClientPage() {
                 <div className="text-destructive">Erro: {error}</div>
             ) : (
                 <>
-                    <DataTable columns={columns} data={data} />
+                    <TableItem columns={columns} data={data} />
                     <DeleteItemModal
                         open={showDeleteModal}
                         idItem={itemToDelete?.idItem ?? null}
