@@ -135,11 +135,6 @@ export default function ClientPage() {
             router.push("/dashboard");
             return;
         }
-
-        if (selectedGroup.role && selectedGroup.role !== "ADMIN") {
-            toast.error("Acesso negado: apenas administradores podem gerenciar membros.", { closeButton: true });
-            router.push("/dashboard");
-        }
     }, [selectedGroup, isAuthenticated, router]);
 
     React.useEffect(() => {
@@ -162,8 +157,6 @@ export default function ClientPage() {
         }
 
         const newRole: 'ADMIN' | 'USER' = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
-
-        // Atualização otimista
         const updated = members.map(m => m.idUser === u.idUser ? { ...m, role: newRole } : m);
         setMembers(updated);
         toast.success(`Função de ${u.username} atualizada.`, { closeButton: true });
@@ -265,9 +258,20 @@ export default function ClientPage() {
                                     <TableRow key={row.id}>
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
+                                                {selectedGroup?.role === 'ADMIN' ? (
+                                                    <>
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <div className="min-h-[48px] flex items-center px-2 py-3">
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </div>
                                                 )}
                                             </TableCell>
                                         ))}

@@ -48,6 +48,7 @@ import {
     PencilIcon,
     SettingsIcon,
     Trash2Icon,
+    UserIcon,
     UserRoundCogIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -234,28 +235,33 @@ export function NavHeader({
                                         <SettingsIcon className='focus:text-primary' />
                                         Configurações
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        variant="destructive"
-                                        onClick={() => setShowExcluir(true)}
-                                    >
-                                        <Trash2Icon />
-                                        Excluir grupo
-                                    </DropdownMenuItem>
                                 </>
                             ) : (
                                 <>
-                                    <DropdownMenuItem>
-                                        <SettingsIcon className="focus:text-primary" />
-                                        Configurações
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        variant="destructive"
-                                        onClick={() => setShowSair(true)}
-                                    >
-                                        <LogOutIcon />
-                                        Sair do grupo
-                                    </DropdownMenuItem>
+                                    <Link href={`/group/${selectedGroup?.idGroup}/members`}>
+                                        <DropdownMenuItem>
+                                            <UserIcon className="focus:text-primary" />
+                                            Visualizar membros
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </>
+                            )}
+                            {selectedGroup && selectedGroup.ownerGroup === `${firstName} ${lastName}` ? (
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onClick={() => setShowExcluir(true)}
+                                >
+                                    <Trash2Icon />
+                                    Excluir grupo
+                                </DropdownMenuItem>
+                            ) : (
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onClick={() => setShowSair(true)}
+                                >
+                                    <LogOutIcon />
+                                    Sair do grupo
+                                </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>
                     </DropdownMenu>

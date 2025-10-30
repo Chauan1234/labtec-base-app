@@ -33,6 +33,10 @@ export function MemberActions({
     const { firstName, lastName } = useAuth();
     const { selectedGroup } = useGroup();
 
+    if (selectedGroup?.role !== 'ADMIN') {
+        return null;
+    }
+
     const ownerName = selectedGroup?.ownerGroup;
     const userFullName = user.name;
     const isOwner = ownerName !== "" && userFullName === ownerName;

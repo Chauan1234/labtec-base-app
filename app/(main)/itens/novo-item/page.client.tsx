@@ -22,6 +22,7 @@ import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
 
 const baseSchema = z.object({
     name: z.string()
@@ -80,6 +81,9 @@ export default function ClientPage() {
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
 
+    // Para preview ao vivo e contador de caracteres
+    const watchedDescription = form.watch("description");
+
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     async function formSubmit(values: FormValues) {
@@ -119,100 +123,113 @@ export default function ClientPage() {
     }
 
     return (
-        <div className="w-full max-w-md">
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(formSubmit)}>
-                    <FieldGroup>
-                        <FieldSet>
-                            <FieldLegend>
-                                Informações do Item
-                            </FieldLegend>
-                            <FieldDescription>
-                                Formulário para criação de um novo item.
-                            </FieldDescription>
+        <div className="w-full max-w-3xl mx-auto px-4">
+            <div className="mb-8">
+                <h1 className="text-2xl font-semibold">Criar novo item</h1>
+                <p className="text-sm text-muted-foreground mt-1">Adicione um item ao grupo selecionado. Campos marcados são obrigatórios.</p>
+            </div>
+
+                <Card className="p-6">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(formSubmit)}>
                             <FieldGroup>
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nome do item</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Digite o nome do item" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Descrição do item</FormLabel>
-                                            <FormControl>
-                                                <Textarea placeholder="Digite a descrição do item" maxLength={255} className="max-h-45 max-w-auto" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="amount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Quantidade</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="Digite a quantidade"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FieldSet>
+                                    <FieldLegend>
+                                        Informações do Item
+                                    </FieldLegend>
+                                    <FieldDescription>
+                                        Formulário para criação de um novo item.
+                                    </FieldDescription>
+                                    <div className="space-y-4 mt-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Nome do item</FormLabel>
+                                                    <FormControl>
+                                                        <Input placeholder="Digite o nome do item" maxLength={100} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="description"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Descrição do item</FormLabel>
+                                                    <FormControl>
+                                                        <Textarea placeholder="Digite a descrição do item" maxLength={255} className="max-h-30" {...field} />
+                                                    </FormControl>
+                                                    <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+                                                        <div className="min-w-0">
+                                                            <FormMessage />
+                                                        </div>
+                                                        <span className="ml-4">{(watchedDescription ?? "").length}/255</span>
+                                                    </div>
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="amount"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Quantidade</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="Digite a quantidade"
+                                                            step={1}
+                                                            min={0}
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-3 mt-6">
+                                        <Link href="/itens">
+                                            <Button variant={"outline"} type="button">Cancelar</Button>
+                                        </Link>
+                                        <Button
+                                            type="submit"
+                                            className="min-w-[120px]"
+                                            disabled={
+                                                !isAuthenticated ||
+                                                !selectedGroup ||
+                                                isSubmitting
+                                            }
+                                        >
+                                            {isSubmitting ? (
+                                                <div className="flex flex-row items-center gap-2">
+                                                    <Spinner />
+                                                    <span>Enviando...</span>
+                                                </div>
+                                            ) : isAuthenticated && selectedGroup ? (
+                                                "Criar item"
+                                            ) : !isAuthenticated && selectedGroup ? (
+                                                <div className="flex flex-row items-center gap-1">
+                                                    <Spinner />
+                                                    <span>Autenticando...</span>
+                                                </div>
+                                            ) : (
+                                                "Selecione um grupo"
+                                            )}
+                                        </Button>
+                                    </div>
+                                </FieldSet>
                             </FieldGroup>
-                            <Field orientation={"horizontal"} className="mt-2">
-                                <Button
-                                    type="submit"
-                                    disabled={
-                                        !isAuthenticated || 
-                                        !selectedGroup || 
-                                        isSubmitting
-                                    }
-                                >
-                                    {isSubmitting ? (
-                                        <div className="flex flex-row items-center gap-1">
-                                            <Spinner />
-                                            <span>Enviando...</span>
-                                        </div>
-                                    ) : isAuthenticated && selectedGroup ? (
-                                        "Criar item"
-                                    ) : !isAuthenticated && selectedGroup ? (
-                                        <div className="flex flex-row items-center gap-1">
-                                            <Spinner />
-                                            <span>Autenticando...</span>
-                                        </div>
-                                    ) : (
-                                        "Selecione um grupo"
-                                    )}
-                                </Button>
-                                <Link href="/itens">
-                                    <Button
-                                        variant={"outline"}
-                                        type="button"
-                                    >
-                                        Cancelar
-                                    </Button>
-                                </Link>
-                            </Field>
-                        </FieldSet>
-                    </FieldGroup>
-                </form>
-            </Form>
+                        </form>
+                    </Form>
+                </Card>
         </div>
     );
 }
