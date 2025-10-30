@@ -116,7 +116,12 @@ export default function ClientPage() {
 
     React.useEffect(() => {
         if (!isAuthenticated) {
-            router.push("/login");
+            console.warn("Usuário não autenticado tentando acessar a página de atualização de item.");
+            return;
+        }
+        if (!selectedGroup) {
+            console.warn("Nenhum grupo selecionado ao tentar acessar a página de atualização de item.");
+            return;
         }
         if (selectedGroup?.role !== 'ADMIN') {
             toast.error("Acesso negado. Apenas administradores podem atualizar itens.", { closeButton: true });

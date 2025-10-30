@@ -37,19 +37,52 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const kc = KeycloakSingleton.getInstance();
       if (authenticated) {
-        const expiration = kc.tokenParsed?.exp;
-        if (expiration) {
-          const timeLeft = expiration * 1000 - Date.now();
-		  
-          if (timeLeft < 60000) {
-            await kc.updateToken();
-          }
-
+        // Função para sincronizar o estado do contexto com o Keycloak
+        const syncFromKC = () => {
           setUsername(kc.tokenParsed?.preferred_username);
           setEmail(kc.tokenParsed?.email);
           setToken(kc.token);
           setFirstName(kc.tokenParsed?.given_name);
           setLastName(kc.tokenParsed?.family_name);
+        }
+        syncFromKC();
+
+        // Tenta atualizar o token imediatamente se estiver muito perto de expirar
+        const expiration = kc.tokenParsed?.exp;
+        if (expiration) {
+          const timeLeft = expiration * 1000 - Date.now();
+          if (timeLeft < 60000) { // Menos de 1 minuto
+            try {
+              await kc.updateToken(60); // Atualiza se o token expirar em menos de 60 segundos
+              syncFromKC();
+            } catch (error) {
+              console.error("Falha ao atualizar token imediatamente:", error);
+            }
+          }
+        }
+
+        // Loop periódico para renovar o token antes de expirar
+        let refreshIntervalId: number | undefined;
+        const refreshLoop = async () => {
+          try {
+            // Pede que atualize se faltarem menos de 30s de validade
+            const refreshed = await kc.updateToken(30);
+            if (refreshed) {
+              syncFromKC();
+            } else {
+              // Mesmo que não tenha renovado, ressincroniza caso token tenha mudado
+              syncFromKC();
+            }
+          } catch (error) {
+            console.error("Erro ao atualizar token periodicamente:", error);
+          }
+        }
+        // Rodar a cada 20s como fallback
+        refreshIntervalId = window.setInterval(refreshLoop, 20_000);
+
+        // Fallback: ao receber evento de token expirado, tenta renovar
+        kc.onTokenExpired = () => {
+          refreshLoop();
         }
       } else {
         kc.login();
@@ -57,7 +90,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     initKeycloak();
-  }, []); // Essa dependência vazia evita loop de renderização
+
+    // Cleanup: quando o componente desmontar, limpar intervalos e handlers
+    return () => {
+      try {
+        const kc = KeycloakSingleton.getInstance();
+        kc.onTokenExpired = undefined;
+      } catch (error) {
+        console.error("Erro ao limpar handlers de token expirado:", error);
+      }
+    }
+  }, []);
 
   const kc = KeycloakSingleton.getInstance();
 

@@ -23,32 +23,52 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 
-const _baseSchema = z.object({
-    name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres.").max(100, "Nome deve ter no máximo 100 caracteres.").nonempty("Nome é obrigatório."),
-    description: z.string().min(3, "Descrição deve ter pelo menos 3 caracteres.").max(255, "Descrição deve ter no máximo 255 caracteres.").nonempty("Descrição é obrigatória."),
-    amount: z.preprocess((val) => {
-        if (typeof val === "string") {
-            const trimmed = val.trim();
-            if (trimmed === "") return undefined;
-            const n = Number(trimmed);
-            return Number.isNaN(n) ? val : n;
-        }
-        return val;
-    }, z.number().min(0, "Quantidade deve ser um número positivo.").int("Quantidade deve ser um número inteiro.")),
-});
-
-const formSchema = _baseSchema.refine((data) => data.amount !== undefined, {
-    message: "Quantidade é obrigatória",
-    path: ["amount"],
+const baseSchema = z.object({
+    name: z.string()
+        .min(3, "O nome do item deve ter pelo menos 3 caracteres")
+        .max(100, "O nome do item deve ter no máximo 100 caracteres")
+        .nonempty("O nome do item é obrigatório"),
+    description: z.string()
+        .min(3, "A descrição do item deve ter pelo menos 3 caracteres")
+        .max(255, "A descrição do item deve ter no máximo 255 caracteres")
+        .nonempty("A descrição do item é obrigatória"),
+    amount: z.union([z.string(), z.number()])
+        .refine((val) => {
+            if (val === "" || val === null || val === undefined) {
+                return false;
+            }
+            return true;
+        }, {
+            message: "A quantidade é obrigatória"
+        })
+        .transform((val) => {
+            if (typeof val === "string") {
+                const num = Number(val);
+                if (isNaN(num)) {
+                    throw new Error("A quantidade deve ser um número válido");
+                }
+                return num;
+            }
+            return val;
+        })
+        .refine((val) => val >= 0, {
+            message: "A quantidade deve ser um número positivo"
+        })
+        .refine((val) => Number.isInteger(val), {
+            message: "A quantidade deve ser um número inteiro"
+        })
+        .refine((val) => val <= 999999999, {
+            message: "A quantidade deve ter no máximo 9 dígitos"
+        })
 });
 
 export default function ClientPage() {
-    type FormValues = z.infer<typeof formSchema>;
+    type FormValues = z.infer<typeof baseSchema>;
 
     const form = useForm<FormValues>({
         mode: "onChange",
         reValidateMode: "onChange",
-        resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+        resolver: zodResolver(baseSchema) as Resolver<FormValues>,
         defaultValues: {
             name: "",
             description: "",
@@ -63,7 +83,6 @@ export default function ClientPage() {
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     async function formSubmit(values: FormValues) {
-        // precaução extra: garantir autenticação e seleção de grupo
         if (!isAuthenticated) {
             console.warn("Tentativa de criar item sem estar autenticado");
             return;
@@ -145,7 +164,11 @@ export default function ClientPage() {
                                         <FormItem>
                                             <FormLabel>Quantidade</FormLabel>
                                             <FormControl>
-                                                <Input type="number" maxLength={16} placeholder="Digite a quantidade" {...field} />
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Digite a quantidade"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -155,7 +178,11 @@ export default function ClientPage() {
                             <Field orientation={"horizontal"} className="mt-2">
                                 <Button
                                     type="submit"
-                                    disabled={!isAuthenticated || !selectedGroup || isSubmitting}
+                                    disabled={
+                                        !isAuthenticated || 
+                                        !selectedGroup || 
+                                        isSubmitting
+                                    }
                                 >
                                     {isSubmitting ? (
                                         <div className="flex flex-row items-center gap-1">

@@ -64,7 +64,7 @@ export default function ClientPage() {
         const params = new URLSearchParams();
         if (debouncedSearch) params.set('search', debouncedSearch);
         if (roleFilter && roleFilter !== 'all') params.set('role', roleFilter);
-        
+
         const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
         router.replace(newUrl, { scroll: false });
     }, [debouncedSearch, roleFilter, pathname, router]);
@@ -72,11 +72,11 @@ export default function ClientPage() {
     // Filtro global que busca por nome e email
     const globalFilterFn = React.useCallback((row: any, _columnId: any, filterValue: any) => {
         if (!filterValue) return true;
-        
+
         const search = String(filterValue).toLowerCase();
         const username = String(row.getValue('username') ?? '').toLowerCase();
         const email = String(row.getValue('email') ?? '').toLowerCase();
-        
+
         return username.includes(search) || email.includes(search);
     }, []);
 
@@ -87,11 +87,11 @@ export default function ClientPage() {
     }, [members, roleFilter]);
 
     // Definir colunas usando buildColumnsManageMembers
-    const columns = React.useMemo(() => 
+    const columns = React.useMemo(() =>
         buildColumnsManageMembers({
             onToggleRole: handleAlterRole,
-        }), 
-    []);
+        }),
+        []);
 
     const table = useReactTable({
         data: filteredData,
@@ -100,7 +100,7 @@ export default function ClientPage() {
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
-        onGlobalFilterChange: (value) => {}, // Não usado diretamente, controlado por debouncedSearch
+        onGlobalFilterChange: (value) => { }, // Não usado diretamente, controlado por debouncedSearch
         globalFilterFn,
         state: {
             columnFilters,
@@ -162,7 +162,7 @@ export default function ClientPage() {
         }
 
         const newRole: 'ADMIN' | 'USER' = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
-        
+
         // Atualização otimista
         const updated = members.map(m => m.idUser === u.idUser ? { ...m, role: newRole } : m);
         setMembers(updated);
@@ -181,21 +181,31 @@ export default function ClientPage() {
     }
 
     return (
-        <div className="space-y-3">
-            <div className="flex flex-row justify-between gap-2">
-                <div className="flex gap-3">
-                    <div className="relative max-w-sm">
-                        <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
+        <div className="space-y-4">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+                <div>
+                    <h1 className="text-2xl font-semibold">Membros</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Gerencie os membros do grupo <span className="font-medium">{selectedGroup?.nameGroup ?? "-"}</span></p>
+                </div>
+            </div>
+
+            {/* Toolbar */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div className="flex items-center gap-3 w-full lg:w-auto">
+                    <div className="relative max-w-sm w-full">
+                        <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <SearchIcon className="size-4" aria-hidden="true" />
                         </div>
                         <Input
-                            placeholder="Buscar"
+                            placeholder="Buscar por nome ou email"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             disabled={loading || members.length === 0}
                             className="pl-9"
                         />
                     </div>
+
                     <Select value={roleFilter} onValueChange={setRoleFilter} disabled={loading || members.length === 0}>
                         <SelectTrigger className="w-[155px] h-8">
                             <SelectValue placeholder="Função" />
@@ -203,29 +213,41 @@ export default function ClientPage() {
                         <SelectContent>
                             <SelectItem value="all">Todas</SelectItem>
                             <SelectItem value="ADMIN">Administradores</SelectItem>
-                            <SelectItem value="USER">Membros</SelectItem>
+                            <SelectItem value="USER">Usuários</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
-                <Button
-                    variant="outline"
-                    disabled={loading}
-                    onClick={() => setInvite(true)}
-                >
-                    <MailPlusIcon className="mr-1 size-4" />
-                    <span>Convidar</span>
-                </Button>
+                <div className="flex justify-end items-center gap-3 lg:ml-4">
+                    <div className="text-sm text-muted-foreground bg-muted/30 px-3 py-1 rounded-full">
+                        {selectedGroup ?
+                            <span>{members.length}</span>
+                            :
+                            <span>-</span>
+                        }
+                        {members.length === 1 ? ' membro' : ' membros'}
+                    </div>
+                    <Button
+                        variant="outline"
+                        disabled={loading}
+                        onClick={() => setInvite(true)}
+                        className="flex items-center gap-2"
+                    >
+                        <MailPlusIcon className="mr-0 size-4" />
+                        <span>Convidar</span>
+                    </Button>
+                </div>
             </div>
 
-            <div className="rounded-md border">
+            {/* Tabela dentro de card */}
+            <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
                 <div className="max-h-[530px] relative overflow-auto">
                     <Table>
-                        <TableHeader className="bg-muted rounded-md sticky top-0">
+                        <TableHeader className="bg-muted sticky top-0 z-10">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
-                                        <TableHead key={header.id} className="rounded-md">
+                                        <TableHead key={header.id}>
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -253,8 +275,8 @@ export default function ClientPage() {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-10 text-center">
-                                        Sem resultados.
+                                    <TableCell colSpan={columns.length} className="h-12 text-center text-sm text-muted-foreground">
+                                        {loading ? 'Carregando membros...' : 'Sem resultados.'}
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -264,9 +286,8 @@ export default function ClientPage() {
             </div>
 
             {/* Paginação */}
-            <div className="flex items-center justify-between px-4 space-x-10">
-                {/* Linhas por página */}
-                <div className="flex flex-1 w-full items-center gap-2 lg:w-fit">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 px-1">
+                <div className="flex items-center gap-3">
                     <Label htmlFor="rows-per-page" className="text-sm font-medium">
                         Linhas por página
                     </Label>
@@ -276,12 +297,8 @@ export default function ClientPage() {
                             table.setPageSize(Number(value));
                         }}
                     >
-                        <SelectTrigger
-                            size="sm"
-                            className="w-auto"
-                            id="rows-per-page"
-                        >
-                            <SelectValue placeholder={table.getState().pagination.pageSize} />
+                        <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+                            <SelectValue placeholder={`${table.getState().pagination.pageSize}`} />
                         </SelectTrigger>
                         <SelectContent side="top">
                             {[10, 25, 50, 100].map((pageSize) => (
@@ -293,57 +310,51 @@ export default function ClientPage() {
                     </Select>
                 </div>
 
-                {/* Informações da página */}
-                <div className="flex w-fit items-center justify-center text-sm font-medium">
-                    Página {table.getState().pagination.pageIndex + 1} de{" "}
-                    {table.getPageCount()}
-                </div>
-
-                {/* Botões de navegação */}
-                <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                    <Button
-                        variant="outline"
-                        className="size-8"
-                        size="icon"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <span className="sr-only">Primeira página</span>
-                        <ChevronsLeftIcon />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="size-8"
-                        size="icon"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <span className="sr-only">Página anterior</span>
-                        <ChevronLeftIcon />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="size-8"
-                        size="icon"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <span className="sr-only">Próxima página</span>
-                        <ChevronRightIcon />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="size-8"
-                        size="icon"
-                        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <span className="sr-only">Última página</span>
-                        <ChevronsRightIcon />
-                    </Button>
+                <div className="flex items-center gap-4">
+                    <div className="text-sm font-medium">
+                        Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <span className="sr-only">Primeira página</span>
+                            <ChevronsLeftIcon />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <span className="sr-only">Página anterior</span>
+                            <ChevronLeftIcon />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <span className="sr-only">Próxima página</span>
+                            <ChevronRightIcon />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <span className="sr-only">Última página</span>
+                            <ChevronsRightIcon />
+                        </Button>
+                    </div>
                 </div>
             </div>
-            
+
             <InviteModal open={invite} onOpenChange={setInvite} />
         </div>
     );

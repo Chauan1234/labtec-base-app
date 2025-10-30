@@ -1,26 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FieldGroup } from "@/components/ui/field";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 interface InviteModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 }
 
-type FormValues = {
-    email: string;
-    role: string;
-}
+const baseSchema = z.object({
+    email: z.email({ pattern: z.regexes.rfc5322Email, message: "Email inválido" }).nonempty("O email é obrigatório"),
+    role: z.enum(['ADMIN', 'USER']).nonoptional("A função é obrigatória"),
+})
 
 export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
-    const form = useForm<FormValues>({ defaultValues: { email: '', role: '' } });
+    type FormValues = z.infer<typeof baseSchema>;
+
+    const form = useForm<FormValues>({
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
+        resolver: zodResolver(baseSchema),
+        defaultValues: {
+            email: '',
+            role: 'USER'
+        }
+    })
+    
     const [submitting, setSubmitting] = React.useState(false);
 
     async function onSubmit(data: FormValues) {
@@ -39,6 +52,12 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
             setSubmitting(false);
         }
     }
+    
+    React.useEffect(() => {
+        if (!open) {
+            form.clearErrors();
+        }
+    })
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,35 +73,49 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-                        <Label>Email</Label>
-                        <FieldGroup className="flex flex-row gap-3 max-w-sm">
-                            <FormField
-                                name="email"
-                                render={({ field }) => {
-                                    return (
-                                        <Input
-                                            type="email"
-                                            placeholder="example@gmail.com"
-                                            required
-                                            {...field}
-                                        />
-                                    )
-                                }}
-                            />
-                            <FormField
-                                name="role"
-                                render={({ field }) => (
-                                    <Select onValueChange={field.onChange} value={field.value as string}>
-                                        <SelectTrigger className="min-w-[140px]">
-                                            <SelectValue placeholder="Função" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="ADMIN">Administrador</SelectItem>
-                                            <SelectItem value="USER">Usuário</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
+                        <FieldGroup className="flex gap-3 max-w-sm">
+                            <div className="space-y-2">
+                                <Label>Email</Label>
+                                <FormField
+                                    name="email"
+                                    render={({ field }) => {
+                                        return (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="email"
+                                                        placeholder="exemplo@gmail.com"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )
+                                    }}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Função</Label>
+                                <FormField
+                                    name="role"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Select onValueChange={field.onChange} value={field.value as string}>
+                                                    <SelectTrigger className="min-w-[140px]">
+                                                        <SelectValue placeholder="Função" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="ADMIN">Administrador</SelectItem>
+                                                        <SelectItem value="USER">Usuário</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </FieldGroup>
                         <DialogFooter>
                             <Button
@@ -93,7 +126,7 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={submitting || !form.formState.isValid || !form.formState.isDirty}
+                                disabled={submitting || !form.formState.isValid}
                             >
                                 Enviar convite
                             </Button>
