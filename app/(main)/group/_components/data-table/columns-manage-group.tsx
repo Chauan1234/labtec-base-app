@@ -47,11 +47,11 @@ export function MemberActions({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button 
-                variant="ghost" 
-                className="h-8 w-8 p-0" 
-                disabled={finalDisabled} 
-                title={isOwner ? "Ações indisponíveis para o owner" : undefined}
+                <Button
+                    variant="ghost"
+                    className="h-8 w-8 p-0"
+                    disabled={finalDisabled}
+                    title={isOwner ? "Ações indisponíveis para o owner" : undefined}
                 >
                     <span className="sr-only">Abrir menu</span>
                     <MoreHorizontalIcon className="h-4 w-4" />
@@ -78,10 +78,13 @@ export function MemberActions({
     );
 }
 
-export function buildColumnsManageMembers(handlers?: {
-    onToggleRole?: (user: Users) => void;
-}): ColumnDef<Users>[] {
-    return [
+export function buildColumnsManageMembers(
+    handlers?: {
+        onToggleRole?: (user: Users) => void;
+    },
+    selectedGroupRole?: 'ADMIN' | 'USER'
+): ColumnDef<Users>[] {
+    const cols: ColumnDef<Users>[] = [
         {
             accessorKey: 'número',
             header: 'ID',
@@ -107,15 +110,19 @@ export function buildColumnsManageMembers(handlers?: {
             header: 'Email',
             filterFn: (row, columnId, filterValue) =>
                 String(row.getValue(columnId)).toLowerCase().includes(String(filterValue).toLowerCase()),
-        },
-        {
+        }
+    ]
+    if (selectedGroupRole === 'ADMIN') {
+        cols.push({
             id: 'actions',
             cell: ({ row }) => (
                 <MemberActions
-                    user={row.original as Users}
+                    user={row.original}
                     onToggleRole={handlers?.onToggleRole}
                 />
-            ),
-        },
-    ]
+            )
+        })
+    }
+
+    return cols;
 }

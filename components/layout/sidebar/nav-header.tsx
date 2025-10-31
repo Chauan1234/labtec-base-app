@@ -150,7 +150,6 @@ export function NavHeader({
                                     placeholder="Procurar grupo..."
                                 />
                                 <CommandList>
-                                    <CommandEmpty>Nenhum grupo encontrado</CommandEmpty>
                                     <CommandGroup>
                                         <div className="!bg-transparent p-0 pt-2" role="none">
                                             <Button
@@ -163,6 +162,7 @@ export function NavHeader({
                                         </div>
                                     </CommandGroup>
                                     <CommandSeparator className="my-1" />
+                                    <CommandEmpty>Nenhum grupo encontrado</CommandEmpty>
                                     <CommandGroup>
                                         {groups.map((group) => (
                                             <CommandItem

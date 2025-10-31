@@ -23,6 +23,7 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
+import clsx from "clsx";
 //Quero ir pra casa não aguento mais tá aqui
 
 export default function ClientPage() {
@@ -87,11 +88,12 @@ export default function ClientPage() {
     }, [members, roleFilter]);
 
     // Definir colunas usando buildColumnsManageMembers
-    const columns = React.useMemo(() =>
-        buildColumnsManageMembers({
-            onToggleRole: handleAlterRole,
-        }),
-        []);
+    const columns = React.useMemo(
+        () => buildColumnsManageMembers(
+            { onToggleRole: handleAlterRole },
+            selectedGroup?.role
+        ),
+        [selectedGroup?.role, handleAlterRole]);
 
     const table = useReactTable({
         data: filteredData,
@@ -114,7 +116,7 @@ export default function ClientPage() {
             return;
         }
 
-        if (selectedGroup.role && selectedGroup.role !== "ADMIN") return;
+        if (selectedGroup.role && selectedGroup?.role !== "ADMIN") return;
 
         setLoading(true);
         try {
@@ -257,7 +259,7 @@ export default function ClientPage() {
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow key={row.id}>
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
+                                            <TableCell key={cell.id} className={clsx(selectedGroup?.role !== 'ADMIN' && "p-0")}>
                                                 {selectedGroup?.role === 'ADMIN' ? (
                                                     <>
                                                         {flexRender(
