@@ -61,8 +61,6 @@ export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <Button
                         variant="destructive"
-                        size="default"
-                        className='cursor-pointer'
                         onClick={handleExcluir}
                         disabled={confirmText !== selectedGroup?.nameGroup}
                     >

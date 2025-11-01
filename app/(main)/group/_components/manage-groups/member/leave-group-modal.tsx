@@ -44,7 +44,7 @@ export function SairGrupoModal({ open, onOpenChange }: SairGrupoModalProps) {
                         </DialogHeader>
                         <div className="text-sm text-muted-foreground mb-4">
                             <DialogDescription>
-                                Tem certeza que deseja sair do grupo? Você pode entrar novamente se tiver o link de convite.
+                                Tem certeza que deseja sair do grupo? Você só poderá entrar novamente se tiver um link de convite.
                             </DialogDescription>
                         </div>
 

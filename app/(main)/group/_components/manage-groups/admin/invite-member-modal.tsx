@@ -14,6 +14,7 @@ import { z } from "zod";
 interface InviteModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    userRole?: 'ADMIN' | 'USER';
 }
 
 const baseSchema = z.object({
@@ -21,7 +22,7 @@ const baseSchema = z.object({
     role: z.enum(['ADMIN', 'USER']).nonoptional("A função é obrigatória"),
 })
 
-export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
+export default function InviteModal({ open, onOpenChange, userRole }: InviteModalProps) {
     type FormValues = z.infer<typeof baseSchema>;
 
     const form = useForm<FormValues>({
@@ -37,6 +38,11 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
     const [submitting, setSubmitting] = React.useState(false);
 
     async function onSubmit(data: FormValues) {
+        if (userRole !== 'ADMIN') {
+            toast.error("Você não tem permissão para convidar membros.", { closeButton: true });
+            return;
+        }
+        
         try {
             setSubmitting(true);
             // chamada para enviar o convite
@@ -57,7 +63,10 @@ export default function InviteModal({ open, onOpenChange }: InviteModalProps) {
         if (!open) {
             form.clearErrors();
         }
-    })
+        if (open && userRole !== 'ADMIN') {
+            onOpenChange?.(false);
+        }
+    }, [open, form, onOpenChange, userRole]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

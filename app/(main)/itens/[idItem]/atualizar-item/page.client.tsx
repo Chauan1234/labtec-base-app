@@ -16,6 +16,7 @@ import { useRouter, useParams } from "next/navigation";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Card } from "@/components/ui/card";
 
 const baseSchema = z.object({
     name: z.string()
@@ -157,96 +158,106 @@ export default function ClientPage() {
     }
 
     return (
-        <div className="w-full max-w-md">
-            <Form {...form} >
-                <form onSubmit={form.handleSubmit(formSubmit)}>
-                    <FieldGroup>
-                        <FieldSet>
-                            <FieldLegend>
-                                Atualizar Item
-                            </FieldLegend>
-                            <FieldDescription>
-                                Atualize as informações do item abaixo.
-                            </FieldDescription>
-                            <FieldGroup>
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Nome do item</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Nome do item" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Descrição do item</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Digite a descrição do item"
-                                                    maxLength={255}
-                                                    className="max-h-45 max-w-auto"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="amount"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Quantidade</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    placeholder="Digite a quantidade"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </FieldGroup>
-                            <Field orientation={"horizontal"}>
-                                <Button
-                                    type="submit"
-                                    className="mt-4"
-                                    disabled={!isAuthenticated || !selectedGroup || isSubmitting}
-                                >
-                                    {isSubmitting ? (
-                                        <div className="flex flex-row items-center gap-1">
-                                            <Spinner />
-                                            <span>Enviando...</span>
-                                        </div>
-                                    ) : (
-                                        "Atualizar item"
-                                    )}
-                                </Button>
-                                <Link href="/itens">
+        <div className="w-full max-w-3xl mx-auto px-4">
+            <div className="mb-8">
+                <h1 className="text-2xl font-semibold">Atualizar Item</h1>
+                <p className="text-sm text-muted-foreground mt-1">Atualize as informações do item abaixo. Todos os campos são obrigatórios.</p>
+            </div>
+
+            <Card className="p-6">
+                <Form {...form} >
+                    <form onSubmit={form.handleSubmit(formSubmit)}>
+                        <FieldGroup>
+                            <FieldSet>
+                                <FieldLegend>
+                                    Informações do Item
+                                </FieldLegend>
+                                <FieldDescription>
+                                    Formulário para atualizar o item selecionado.
+                                </FieldDescription>
+                                <div className="space-y-4 mt-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nome do item</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Nome do item" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Descrição do item</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Digite a descrição do item"
+                                                        maxLength={255}
+                                                        className="max-h-45 max-w-auto"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="amount"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Quantidade</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="Digite a quantidade"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-end gap-3 mt-6">
+                                    <Link href="/itens">
+                                        <Button
+                                            variant="outline"
+                                            type="button"
+                                        >
+                                            Cancelar
+                                        </Button>
+                                    </Link>
                                     <Button
-                                        variant={"outline"}
-                                        type="button"
-                                        className="mt-4 ml-2"
+                                        type="submit"
+                                        className="min-w-[120px]"
+                                        disabled={
+                                            !isAuthenticated ||
+                                            !selectedGroup ||
+                                            isSubmitting
+                                        }
                                     >
-                                        Cancelar
+                                        {isSubmitting ? (
+                                            <div className="flex flex-row items-center gap-2">
+                                                <Spinner />
+                                                <span>Enviando...</span>
+                                            </div>
+                                        ) : (
+                                            "Atualizar item"
+                                        )}
                                     </Button>
-                                </Link>
-                            </Field>
-                        </FieldSet>
-                    </FieldGroup>
-                </form>
-            </Form >
+                                </div>
+                            </FieldSet>
+                        </FieldGroup>
+                    </form>
+                </Form >
+            </Card>
         </div >
     )
 }

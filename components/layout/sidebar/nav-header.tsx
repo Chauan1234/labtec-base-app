@@ -231,10 +231,6 @@ export function NavHeader({
                                         <PencilIcon className='focus:text-primary' />
                                         Renomear
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <SettingsIcon className='focus:text-primary' />
-                                        Configurações
-                                    </DropdownMenuItem>
                                 </>
                             ) : (
                                 <>

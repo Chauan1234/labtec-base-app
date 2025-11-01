@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontalIcon } from "lucide-react";
+import { LogOutIcon, MoreHorizontalIcon, UserRoundMinusIcon, UserRoundPlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -66,13 +66,19 @@ export function MemberActions({
                 <DropdownMenuSeparator />
                 {user.role === 'ADMIN' ? (
                     <DropdownMenuItem onClick={() => !finalDisabled && onToggleRole?.(user)}>
+                        <UserRoundMinusIcon className="size-4 hover:text-primary" />
                         Rebaixar a membro
                     </DropdownMenuItem>
                 ) : (
                     <DropdownMenuItem onClick={() => !finalDisabled && onToggleRole?.(user)}>
+                        <UserRoundPlusIcon className="size-4 hover:text-primary" />
                         Promover a admin
                     </DropdownMenuItem>
                 )}
+                <DropdownMenuItem variant="destructive" onClick={() => !finalDisabled && onToggleRole?.(user)}>
+                    <LogOutIcon className="size-4" />
+                    Remover do grupo
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

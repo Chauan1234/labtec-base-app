@@ -28,7 +28,7 @@ import clsx from "clsx";
 
 export default function ClientPage() {
     const { isAuthenticated, token, firstName, lastName } = useAuth();
-    const { selectedGroup } = useGroup();
+    const { selectedGroup, refresh } = useGroup();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -87,13 +87,53 @@ export default function ClientPage() {
         return members.filter(m => m.role === roleFilter.toUpperCase());
     }, [members, roleFilter]);
 
+
+    // Função para alterar a função do usuário
+    const handleAlterRole = React.useCallback(async (u: Users) => {
+        if (!selectedGroup || !isAuthenticated) {
+            toast.error("Ação não permitida.", { closeButton: true });
+            return;
+        }
+
+        if (selectedGroup.ownerGroup === u.name) {
+            toast.error("O owner do grupo não pode ter sua função alterada.", { closeButton: true });
+            return;
+        }
+        if (u.name === `${firstName} ${lastName}`) {
+            toast.error("Você não pode alterar sua própria função.", { closeButton: true });
+            return;
+        }
+
+        const newRole: 'ADMIN' | 'USER' = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
+        const prevMembers = members;
+        const updated = members.map(m => m.idUser === u.idUser ? { ...m, role: newRole } : m);
+        setMembers(updated);
+        toast.success(`Função de ${u.username} atualizada.`, { closeButton: true });
+
+        try {
+            await alterRoleUser(selectedGroup.idGroup, u.idUser, newRole, token);
+            // Recarregar os dados do servidor após sucesso
+            await loadMembers();
+        } catch (err) {
+            console.error("Erro ao alterar função do membro:", err);
+            toast.error("Erro ao alterar função do membro.", { closeButton: true });
+            // Reverter para o estado anterior em caso de erro
+            setMembers(prevMembers);
+        }
+    }, [selectedGroup, isAuthenticated, members, token, firstName, lastName]);
+
     // Definir colunas usando buildColumnsManageMembers
-    const columns = React.useMemo(
-        () => buildColumnsManageMembers(
+    const columns = React.useMemo(() => {
+        const base = buildColumnsManageMembers(
             { onToggleRole: handleAlterRole },
             selectedGroup?.role
-        ),
-        [selectedGroup?.role, handleAlterRole]);
+        );
+
+        if (selectedGroup?.role !== 'ADMIN') {
+            return base.filter(col => col.id !== 'actions');
+        }
+        return base;
+    }, [selectedGroup?.role, handleAlterRole]);
 
     const table = useReactTable({
         data: filteredData,
@@ -115,8 +155,6 @@ export default function ClientPage() {
             setMembers([]);
             return;
         }
-
-        if (selectedGroup.role && selectedGroup?.role !== "ADMIN") return;
 
         setLoading(true);
         try {
@@ -143,37 +181,28 @@ export default function ClientPage() {
         loadMembers();
     }, [selectedGroup, token]);
 
-    async function handleAlterRole(u: Users) {
-        if (!selectedGroup || !isAuthenticated) {
-            toast.error("Ação não permitida.", { closeButton: true });
-            return;
+    React.useEffect(() => {
+        let mounted = true;
+        const refreshData = async () => {
+            if (!selectedGroup) {
+                if (mounted) setMembers([]);
+                return;
+            }
+
+            try {
+                // atualiza grupos/selectedGroup antes de carregar membros
+                await refresh?.();
+            } catch (err) {
+                console.warn("Erro ao atualizar grupo antes de carregar membros:", err);
+            }
+            if (mounted) await loadMembers();
         }
 
-        if (selectedGroup.ownerGroup === u.name) {
-            toast.error("O owner do grupo não pode ter sua função alterada.", { closeButton: true });
-            return;
+        refreshData();
+        return () => {
+            mounted = false;
         }
-        if (u.name === `${firstName} ${lastName}`) {
-            toast.error("Você não pode alterar sua própria função.", { closeButton: true });
-            return;
-        }
-
-        const newRole: 'ADMIN' | 'USER' = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
-        const updated = members.map(m => m.idUser === u.idUser ? { ...m, role: newRole } : m);
-        setMembers(updated);
-        toast.success(`Função de ${u.username} atualizada.`, { closeButton: true });
-
-        try {
-            await alterRoleUser(selectedGroup.idGroup, u.idUser, newRole, token);
-            // Recarregar os dados do servidor após sucesso
-            await loadMembers();
-        } catch (err) {
-            console.error("Erro ao alterar função do membro:", err);
-            toast.error("Erro ao alterar função do membro.", { closeButton: true });
-            // Reverter para o estado anterior em caso de erro
-            setMembers(members);
-        }
-    }
+    }, [selectedGroup?.role, token, refresh]);
 
     return (
         <div className="space-y-4">
@@ -193,7 +222,7 @@ export default function ClientPage() {
                             <SearchIcon className="size-4" aria-hidden="true" />
                         </div>
                         <Input
-                            placeholder="Buscar por nome ou email"
+                            placeholder="Buscar"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             disabled={loading || members.length === 0}
@@ -201,7 +230,11 @@ export default function ClientPage() {
                         />
                     </div>
 
-                    <Select value={roleFilter} onValueChange={setRoleFilter} disabled={loading || members.length === 0}>
+                    <Select
+                        value={roleFilter}
+                        onValueChange={setRoleFilter}
+                        disabled={loading || members.length === 0}
+                    >
                         <SelectTrigger className="w-[155px] h-8">
                             <SelectValue placeholder="Função" />
                         </SelectTrigger>
@@ -222,15 +255,18 @@ export default function ClientPage() {
                         }
                         {members.length === 1 ? ' membro' : ' membros'}
                     </div>
-                    <Button
-                        variant="outline"
-                        disabled={loading}
-                        onClick={() => setInvite(true)}
-                        className="flex items-center gap-2"
-                    >
-                        <MailPlusIcon className="mr-0 size-4" />
-                        <span>Convidar</span>
-                    </Button>
+                    
+                    {selectedGroup?.role === 'ADMIN' && (
+                        <Button
+                            variant="outline"
+                            disabled={loading}
+                            onClick={() => setInvite(true)}
+                            className="flex items-center gap-2"
+                        >
+                            <MailPlusIcon className="mr-0 size-4" />
+                            <span>Convidar</span>
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -361,7 +397,7 @@ export default function ClientPage() {
                 </div>
             </div>
 
-            <InviteModal open={invite} onOpenChange={setInvite} />
+            <InviteModal open={invite} onOpenChange={setInvite} userRole={selectedGroup?.role} />
         </div>
     );
 }

@@ -54,17 +54,13 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
     React.useEffect(() => {
-        // quando o modal abrir, preencher o form com o nome atual do grupo
+        // Quando o modal abrir, preencher o form com o nome atual do grupo
         if (open) {
             form.reset({
                 nomeGrupo: selectedGroup?.nameGroup ?? '',
             })
         } else {
-            // quando fechar, limpar erros e resetar (assim evita de mostrar erros ao reabrir)
             form.clearErrors();
-            form.reset({
-                nomeGrupo: '',
-            });
         }
     }, [open, selectedGroup, form])
 
@@ -87,6 +83,7 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
             try {
                 // chamada para renomear o grupo
                 await renameGroup(selectedGroup.idGroup, data.nomeGrupo, token);
+
                 toast.success("Grupo renomeado com sucesso.", { closeButton: true });
                 onOpenChange?.(false);
 
@@ -139,7 +136,6 @@ export function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalPro
                                                     className='w-full rounded-md border px-3 text-sm focus:outline-none'
                                                     placeholder='Nome do grupo'
                                                     autoFocus
-                                                    required
                                                     {...field}
                                                 />
                                             </FormControl>

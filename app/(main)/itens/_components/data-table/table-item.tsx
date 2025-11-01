@@ -36,6 +36,9 @@ import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
 import { useGroup } from "@/contexts/GroupContext";
 import clsx from "clsx";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useDebounce } from "use-debounce";
+import { date } from "zod";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -47,13 +50,67 @@ export function TableItem<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const { selectedGroup } = useGroup();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [globalFilter, setGlobalFilter] = React.useState<string>("");
-    // suporta seleção de intervalo de datas: undefined | { from?: Date; to?: Date }
+
+    // Input de busca e debounce
+    const [searchInput, setSearchInput] = React.useState<string>("");
+    const [debouncedSearch] = useDebounce(searchInput, 300);
+
+    // Estado para intervalo de datas
     const [dateRange, setDateRange] = React.useState<{ from?: Date; to?: Date } | undefined>(undefined);
     const [open, setOpen] = React.useState(false);
-    // filtra os dados pelo intervalo de datas antes de passar ao react-table
+
+    // Flag para controlar se já inicializou os filtros da URL
+    const hasInitialized = React.useRef(false);
+
+    // Inicializar filtros a partir da URL APENAS na primeira renderização
+    React.useEffect(() => {
+        if (!hasInitialized.current) {
+            const search = searchParams.get("search") || "";
+            const dateFrom = searchParams.get("dateFrom");
+            const dateTo = searchParams.get("dateTo");
+
+            setSearchInput(search);
+
+            if (dateFrom || dateTo) {
+                setDateRange({
+                    from: dateFrom ? new Date(dateFrom) : undefined,
+                    to: dateTo ? new Date(dateTo) : undefined,
+                });
+            }
+
+            hasInitialized.current = true;
+        }
+    }, []);
+
+    // Atualiza URL quando os filtros mudarem
+    React.useEffect(() => {
+        // Só atualiza URL após a inicialização
+        if (!hasInitialized.current) return;
+
+        const params = new URLSearchParams();
+
+        if (debouncedSearch) {
+            params.set("search", debouncedSearch);
+        }
+
+        if (dateRange?.from) {
+            params.set("dateFrom", dateRange.from.toISOString());
+        }
+
+        if (dateRange?.to) {
+            params.set("dateTo", dateRange.to.toISOString());
+        }
+
+        const newURL = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+        router.replace(newURL, { scroll: false });
+    }, [debouncedSearch, dateRange, pathname, router]);
+
+    // Filtra os dados pelo intervalo de datas antes de passar ao react-table
     const dataFilteredByDate = React.useMemo(() => {
         if (!dateRange || (!dateRange.from && !dateRange.to)) return data;
         return data.filter((item: any) => {
@@ -80,43 +137,17 @@ export function TableItem<TData, TValue>({
         });
     }, [data, dateRange]);
 
-    // global filter fn: retorna true se ANY das colunas (OR) contiver o texto
+    // Global filter fn: retorna true se ANY das colunas (OR) contiver o texto
     const globalFilterFn = React.useCallback((row: any, _columnId: any, filterValue: any) => {
-        // Texto: se houver filtro de texto, o registro precisa corresponder
-        if (filterValue) {
-            const search = String(filterValue).toLowerCase();
-            const fields = ["name", "description", "amount", "creator"];
-            const matchesText = fields.some((id) => {
-                const v = row.getValue(id);
-                return String(v ?? "").toLowerCase().includes(search);
-            });
-            if (!matchesText) return false;
-        }
+        if (!filterValue) return true;
 
-        // Data: se houver um intervalo, o registro precisa ter 'updatedAt' entre as datas
-        if (dateRange && (dateRange.from || dateRange.to)) {
-            const rowVal = row.getValue("updatedAt");
-            if (!rowVal) return false;
-            const rowDate = new Date(rowVal);
-            if (isNaN(rowDate.getTime())) return false;
-            if (dateRange.from && dateRange.to) {
-                const start = new Date(dateRange.from);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(dateRange.to);
-                end.setHours(23, 59, 59, 999);
-                if (rowDate < start || rowDate > end) return false;
-            } else if (dateRange.from) {
-                // única data selecionada: compara apenas o dia
-                const only = new Date(dateRange.from);
-                if (rowDate.toDateString() !== only.toDateString()) return false;
-            } else if (dateRange.to) {
-                const only = new Date(dateRange.to);
-                if (rowDate.toDateString() !== only.toDateString()) return false;
-            }
-        }
-
-        return true;
-    }, [dateRange]);
+        const search = String(filterValue).toLowerCase();
+        const fields = ["name", "description", "amount", "creator"];
+        return fields.some((id) => {
+            const v = row.getValue(id);
+            return String(v ?? "").toLowerCase().includes(search);
+        });
+    }, []);
 
     const table = useReactTable({
         data: dataFilteredByDate,
@@ -125,12 +156,11 @@ export function TableItem<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
-        // adiciona suporte a globalFilter controlado
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: (value) => { }, // Controlado por debouncedSearch
         globalFilterFn,
         state: {
             columnFilters,
-            globalFilter,
+            globalFilter: debouncedSearch,
         },
     });
 
@@ -148,16 +178,14 @@ export function TableItem<TData, TValue>({
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="relative w-full sm:w-80">
+                    <div className="relative max-w-sm w-full">
                         <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             <SearchIcon className="size-4" aria-hidden="true" />
                         </div>
                         <Input
-                            placeholder={`Buscar`}
-                            value={globalFilter}
-                            onChange={(event) => {
-                                table.setGlobalFilter(event.target.value);
-                            }}
+                            placeholder="Buscar"
+                            value={searchInput}
+                            onChange={(event) => setSearchInput(event.target.value)}
                             className="pl-9"
                         />
                     </div>
@@ -165,7 +193,7 @@ export function TableItem<TData, TValue>({
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
                             <div>
-                                <Button variant="outline" className="data-[empty=true]:text-muted-foreground w-44 justify-between text-left font-normal">
+                                <Button variant="outline" className="data-[empty=true]:text-muted-foreground w-[208px] justify-between text-left font-normal">
                                     {dateRange && (dateRange.from || dateRange.to)
                                         ? dateRange.from && dateRange.to
                                             ? `${dateRange.from.toLocaleDateString()} à ${dateRange.to.toLocaleDateString()}`
@@ -205,17 +233,16 @@ export function TableItem<TData, TValue>({
                                     }}
                                 />
                                 <div className="flex justify-between">
-                                    <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    onClick={() => setDateRange(undefined)}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setDateRange(undefined)}
                                     >
                                         Limpar
                                     </Button>
-                                    <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    onClick={() => setOpen(false)}
+                                    <Button
+                                        size="sm"
+                                        onClick={() => setOpen(false)}
                                     >
                                         Aplicar
                                     </Button>
@@ -223,9 +250,9 @@ export function TableItem<TData, TValue>({
                             </div>
                         </PopoverContent>
                     </Popover>
-
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex justify-end items-center gap-3 md:ml-4">
                     <div className="text-sm text-muted-foreground bg-muted/30 px-3 py-1 rounded-full">
                         {selectedGroup ?
                             <span>{data.length}</span>
@@ -234,10 +261,11 @@ export function TableItem<TData, TValue>({
                         }
                         {data.length === 1 ? ' item' : ' itens'}
                     </div>
+
                     {selectedGroup?.role === 'ADMIN' && (
                         <Link href={"/itens/novo-item"}>
                             <Button variant="outline" className="flex items-center gap-2">
-                                <PlusIcon className="h-4 w-4" />
+                                <PlusIcon className="size-4" />
                                 <span>Adicionar</span>
                             </Button>
                         </Link>
