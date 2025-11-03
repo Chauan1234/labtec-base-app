@@ -1,40 +1,33 @@
-// React
-import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGroup } from "@/contexts/GroupContext";
+import { createGroup } from "@/lib/group-controller/group";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusIcon } from "lucide-react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
-// UI Components
-import { Button } from '../../../../../../components/ui/button';
-import { CircleAlertIcon, EditIcon } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { FieldGroup } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import z from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/contexts/AuthContext';
-import { useGroup } from '@/contexts/GroupContext';
-import { renameGroup } from '@/lib/group-controller/group';
-import { toast } from 'sonner';
-import { Spinner } from '@/components/ui/spinner';
-
-// Props
-interface RenomearGrupoModalProps {
+interface NovoGrupoModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 }
 
 const baseSchema = z.object({
     nomeGrupo: z.string().min(3, "O nome deve ter no mínimo 3 caracteres").max(50, "O nome' deve ter no máximo 50 caracteres").nonempty("O nome do grupo é obrigatório"),
-});
+})
 
-export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupoModalProps) {
+export default function NovoGrupoModal({ open, onOpenChange }: NovoGrupoModalProps) {
+    const { isAuthenticated, token } = useAuth();
+    const { selectedGroup, refresh } = useGroup();
+
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+
     type FormValues = z.infer<typeof baseSchema>;
 
     const form = useForm<FormValues>({
@@ -46,64 +39,43 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
         }
     })
 
-    // Definindo variáveis de Contexts
-    const { firstName, lastName, isAuthenticated, token } = useAuth();
-    const { selectedGroup, refresh } = useGroup();
-
-    // Estado de botão de envio do formulário
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-
     React.useEffect(() => {
-        // Quando o modal abrir, preencher o form com o nome atual do grupo
-        if (selectedGroup?.ownerGroup !== `${firstName} ${lastName}`) {
-            console.warn("O usuário atual não é o dono do grupo selecionado.");
-            onOpenChange?.(false);
-            return;
-        }
         if (open) {
-            form.reset({
-                nomeGrupo: selectedGroup?.nameGroup ?? '',
-            })
+            form.reset();
         } else {
             form.clearErrors();
         }
-    }, [open, selectedGroup, form, onOpenChange])
+    }, [open, form])
 
-    async function alterarNomeGrupo(data: FormValues) {
+    async function novoGrupo(data: FormValues) {
         if (open) {
             if (!isAuthenticated) {
-                console.warn("Tentativa de renomear grupo sem estar autenticado");
+                toast.error('Você precisa estar logado para criar um grupo.');
                 return;
             }
             if (!selectedGroup) {
-                console.warn("Nenhum grupo selecionado ao tentar renomear");
-                return;
-            }
-            if (data.nomeGrupo === selectedGroup.nameGroup) {
-                toast.error("O novo nome do grupo deve ser diferente do atual.", { closeButton: true });
+                toast.error('Nenhum grupo selecionado.');
                 return;
             }
 
             setIsSubmitting(true);
             try {
-                await renameGroup(selectedGroup.idGroup, data.nomeGrupo, token);
+                await createGroup(data.nomeGrupo, token);
 
-                toast.success("Grupo renomeado com sucesso.", { closeButton: true });
+                toast.success('Grupo criado com sucesso!');
                 onOpenChange?.(false);
+                form.reset();
 
                 try {
                     await refresh?.();
-                } catch (err) {
-                    console.warn("Erro ao atualizar grupos após renomear:", err);
+                } catch (error) {
+                    console.error("Erro ao atualizar grupos após criar novo grupo:", error);
                 }
             } catch (error) {
-                console.error("Erro ao renomear grupo:", error);
-                toast.error("Erro ao renomear o grupo.", { closeButton: true });
+                toast.error('Erro ao criar grupo.');
             } finally {
                 setIsSubmitting(false);
             }
-        } else {
-            console.warn("Formulário submetido com o modal fechado");
         }
     }
 
@@ -113,22 +85,22 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
                 <div className="flex flex-col md:flex-row">
                     <div className="flex items-center justify-center p-6 bg-card md:w-20">
                         <div className="rounded-full bg-background p-2 shadow-md">
-                            <EditIcon className="size-7 text-primary" />
+                            <PlusIcon className="size-7 text-primary" />
                         </div>
                     </div>
 
                     <div className="p-6 flex-1">
                         <DialogHeader className="p-0 mb-1">
-                            <DialogTitle className="text-lg font-semibold">Renomear Grupo</DialogTitle>
+                            <DialogTitle className="text-lg font-semibold">Criar Novo Grupo</DialogTitle>
                         </DialogHeader>
                         <div className="text-sm text-muted-foreground mb-4">
                             <DialogDescription>
-                                Informe o novo nome do grupo.
+                                Informe o nome do novo grupo que deseja criar.
                             </DialogDescription>
                         </div>
 
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(alterarNomeGrupo)} className='space-y-4'>
+                            <form onSubmit={form.handleSubmit(novoGrupo)} className='space-y-4'>
                                 <FormField
                                     control={form.control}
                                     name='nomeGrupo'
@@ -136,9 +108,9 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
                                         <FormItem>
                                             <FormControl>
                                                 <Input
-                                                    type='text'
+                                                    type="text"
                                                     className='w-full rounded-md border px-3 text-sm focus:outline-none'
-                                                    placeholder='Nome do grupo'
+                                                    placeholder="Nome do grupo"
                                                     autoFocus
                                                     {...field}
                                                 />
@@ -178,6 +150,7 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
                         </Form>
                     </div>
                 </div>
+
             </DialogContent>
         </Dialog>
     )

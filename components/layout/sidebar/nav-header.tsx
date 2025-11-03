@@ -7,9 +7,10 @@ import Image from "next/image";
 import Package from '../../../package.json';
 
 // Components
-import { SairGrupoModal } from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
-import { ExcluirGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/delete-group-modal";
-import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
+import NovoGrupoModal from "@/app/(main)/group/_components/create-group/novo-grupo-modal";
+import SairGrupoModal from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
+import ExcluirGrupoModal from "@/app/(main)/group/_components/manage-groups/admin/delete-group-modal";
+import RenomearGrupoModal from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
 
 // Assets
 import LogoLabtec from "@/public/logo-labtec-sem-texto.png";
@@ -46,7 +47,6 @@ import {
     EllipsisVerticalIcon,
     LogOutIcon,
     PencilIcon,
-    SettingsIcon,
     Trash2Icon,
     UserIcon,
     UserRoundCogIcon,
@@ -73,9 +73,10 @@ export function NavHeader({
     const [value, setValue] = React.useState("");
 
     // estados para controlar os modais
+    const [showCriarGrupo, setShowCriarGrupo] = React.useState(false);
+    const [showSairGrupo, setShowSairGrupo] = React.useState(false);
     const [showRenomear, setShowRenomear] = React.useState(false);
     const [showExcluir, setShowExcluir] = React.useState(false);
-    const [showSair, setShowSair] = React.useState(false);
 
     return (
         <>
@@ -155,7 +156,8 @@ export function NavHeader({
                                             <Button
                                                 variant="outline"
                                                 className="w-full rounded-md h-7 mb-1 text-xs"
-                                                onPointerDown={(e) => e.stopPropagation()} // evita que o Command capture seleção/foco
+                                                onPointerDown={(e) => e.stopPropagation()}
+                                                onClick={() => setShowCriarGrupo(true)}
                                             >
                                                 <span>Novo Grupo</span>
                                             </Button>
@@ -220,18 +222,12 @@ export function NavHeader({
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {selectedGroup && selectedGroup.role === 'ADMIN' ? (
-                                <>
-                                    <Link href={`/group/${selectedGroup.idGroup}/members`}>
-                                        <DropdownMenuItem>
-                                            <UserRoundCogIcon className='focus:text-primary' />
-                                            Gerenciar membros
-                                        </DropdownMenuItem>
-                                    </Link>
-                                    <DropdownMenuItem onClick={() => setShowRenomear(true)}>
-                                        <PencilIcon className='focus:text-primary' />
-                                        Renomear
+                                <Link href={`/group/${selectedGroup.idGroup}/members`}>
+                                    <DropdownMenuItem>
+                                        <UserRoundCogIcon className='focus:text-primary' />
+                                        Gerenciar membros
                                     </DropdownMenuItem>
-                                </>
+                                </Link>
                             ) : (
                                 <>
                                     <Link href={`/group/${selectedGroup?.idGroup}/members`}>
@@ -243,17 +239,23 @@ export function NavHeader({
                                 </>
                             )}
                             {selectedGroup && selectedGroup.ownerGroup === `${firstName} ${lastName}` ? (
-                                <DropdownMenuItem
-                                    variant="destructive"
-                                    onClick={() => setShowExcluir(true)}
-                                >
-                                    <Trash2Icon />
-                                    Excluir grupo
-                                </DropdownMenuItem>
+                                <>
+                                    <DropdownMenuItem onClick={() => setShowRenomear(true)}>
+                                        <PencilIcon className='focus:text-primary' />
+                                        Renomear
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onClick={() => setShowExcluir(true)}
+                                    >
+                                        <Trash2Icon />
+                                        Excluir grupo
+                                    </DropdownMenuItem>
+                                </>
                             ) : (
                                 <DropdownMenuItem
                                     variant="destructive"
-                                    onClick={() => setShowSair(true)}
+                                    onClick={() => setShowSairGrupo(true)}
                                 >
                                     <LogOutIcon />
                                     Sair do grupo
@@ -262,9 +264,10 @@ export function NavHeader({
                         </DropdownMenuContent>
                     </DropdownMenu>
                     {/* Modais controlados */}
+                    <NovoGrupoModal open={showCriarGrupo} onOpenChange={setShowCriarGrupo} />
                     <RenomearGrupoModal open={showRenomear} onOpenChange={setShowRenomear} />
+                    <SairGrupoModal open={showSairGrupo} onOpenChange={setShowSairGrupo} />
                     <ExcluirGrupoModal open={showExcluir} onOpenChange={setShowExcluir} />
-                    <SairGrupoModal open={showSair} onOpenChange={setShowSair} />
                 </>
             </SidebarMenu>
         </>

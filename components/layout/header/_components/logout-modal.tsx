@@ -25,7 +25,6 @@ export default function LogoutModal({ open, onOpenChange }: LogoutModalProps) {
                 </AlertDialogHeader>
                 
                 <AlertDialogFooter className="gap-2 flex flex-col sm:flex-col">
-                    <AlertDialogCancel className="w-full">Cancelar</AlertDialogCancel>
                     <Button
                         variant="logout"
                         onClick={logout}
@@ -33,6 +32,7 @@ export default function LogoutModal({ open, onOpenChange }: LogoutModalProps) {
                     >
                         Sair
                     </Button>
+                    <AlertDialogCancel className="w-full">Cancelar</AlertDialogCancel>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

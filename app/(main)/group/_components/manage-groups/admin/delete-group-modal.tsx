@@ -16,7 +16,7 @@ interface ExcluirGrupoModalProps {
     onOpenChange?: (open: boolean) => void;
 }
 
-export function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps) {
+export default function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoModalProps) {
     const [confirmText, setConfirmText] = React.useState('');
 
     const { selectedGroup } = useGroup();

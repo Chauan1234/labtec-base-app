@@ -7,9 +7,6 @@ import { useEffect } from "react";
 // Components
 import { NavMain } from "@/components/layout/sidebar/nav-main";
 import { NavHeader } from "@/components/layout/sidebar/nav-header";
-import { SairGrupoModal } from "@/app/(main)/group/_components/manage-groups/member/leave-group-modal";
-import { ExcluirGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/delete-group-modal";
-import { RenomearGrupoModal } from "@/app/(main)/group/_components/manage-groups/admin/rename-group-modal";
 
 // Contexts e Libs
 import { useGroup } from "@/contexts/GroupContext";
@@ -35,16 +32,7 @@ const data = {
 };
 
 export default function AppSidebar() {
-    const { selectedGroup, setSelectedGroup, groups, loading } = useGroup();
-
-    // estado para controlar o modal de renomear
-    const [showRenomear, setShowRenomear] = React.useState(false);
-
-    // estado para controlar o modal de excluir
-    const [showExcluir, setShowExcluir] = React.useState(false);
-
-    // estado para controlar o modal de sair
-    const [showSair, setShowSair] = React.useState(false);
+    const { selectedGroup, setSelectedGroup, groups } = useGroup();
 
     // seta o grupo inicial baseado nos groups carregados
     useEffect(() => {
@@ -62,15 +50,6 @@ export default function AppSidebar() {
             <SidebarContent>
                 <NavMain items={data.NavMain} />
             </SidebarContent>
-
-            {/* Modal de renomear grupo - controlado pelo estado */}
-            <RenomearGrupoModal open={showRenomear} onOpenChange={setShowRenomear} />
-
-            {/* Modal de excluir grupo - controlado pelo estado */}
-            <ExcluirGrupoModal open={showExcluir} onOpenChange={setShowExcluir} />
-
-            {/* Modal de sair do grupo - controlado pelo estado */}
-            <SairGrupoModal open={showSair} onOpenChange={setShowSair} />
         </Sidebar>
     )
 }
