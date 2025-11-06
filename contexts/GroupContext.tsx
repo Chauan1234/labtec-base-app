@@ -21,11 +21,25 @@ type GroupContextType = {
 
 const GroupContext = createContext<GroupContextType | undefined>(undefined);
 
+const SELECTED_GROUP_KEY = "labtec:selectedGroupId";
+
 export function GroupProvider({ children }: { children: React.ReactNode }) {
   const { token, isAuthenticated } = useAuth();
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedGroup, setSelectedGroupState] = useState<Group | null>(null);
+
+  // wrapper que persiste a seleção no localStorage
+  const setSelectedGroup = React.useCallback((g: Group | null) => {
+    setSelectedGroupState(g);
+    if (typeof window !== "undefined") {
+      if (g) {
+        localStorage.setItem(SELECTED_GROUP_KEY, g.idGroup);
+      } else {
+        localStorage.removeItem(SELECTED_GROUP_KEY);
+      }
+    }
+  }, []);
 
   const mapApi = (g: ApiGroup): Group => ({ idGroup: g.idGroup, nameGroup: g.nameGroup, ownerGroup: g.ownerGroup, role: g.role });
 
@@ -37,12 +51,25 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
       const mapped = api.map(mapApi);
       setGroups(mapped);
 
-      // trocar selectedGroup pelo item atualizado (mesmo id) ou escolher o primeiro
-      setSelectedGroup(prev => prev ?? (mapped.length > 0 ? mapped[0] : null));
-      setSelectedGroup(prev => {
-        if (!prev) return mapped.length > 0 ? mapped[0] : null;
-        const updated = mapped.find(g => g.idGroup === prev.idGroup);
-        return updated ?? prev; // se não encontrou, mantém o anterior
+      // Restaurar seleção persistida, ou manter a anterior/usar primeiro disponível
+      const savedId = typeof window !== "undefined" ? localStorage.getItem(SELECTED_GROUP_KEY) : null;
+      setSelectedGroupState(prev => {
+        // se já tinha seleção, tenta apontar para o item atualizado (mesmo id)
+        if (prev) {
+          const updated = mapped.find(g => g.idGroup === prev.idGroup);
+          if (updated) {
+            // também atualiza o localStorage com o id (caso prev seja objeto desatualizado)
+            if (typeof window !== "undefined") localStorage.setItem(SELECTED_GROUP_KEY, updated.idGroup);
+            return updated;
+          }
+        }
+        // tenta restaurar a seleção salva no localStorage
+        if (savedId) {
+          const fromSaved = mapped.find(g => g.idGroup === savedId);
+          if (fromSaved) return fromSaved;
+        }
+        // fallback para o primeiro ou null
+        return mapped.length > 0 ? mapped[0] : null;
       });
     } catch (e) {
       console.error("Failed to fetch groups", e);

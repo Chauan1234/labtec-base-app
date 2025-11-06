@@ -10,7 +10,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
-
 // Fonts
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +26,9 @@ export const metadata: Metadata = {
     template: "%s | BaseApp",
     default: "BaseApp",
   },
+  icons: {
+    icon: "/dev/apps/favicon.ico",
+  },
   description: "BaseApp - Sistema para servir de base para novos projetos.",
 };
 
@@ -40,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){} })();` }} />
         <Providers>
 
           {/* Sidebar */}
