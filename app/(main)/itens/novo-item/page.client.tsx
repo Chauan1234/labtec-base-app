@@ -20,6 +20,7 @@ import React from "react";
 import { z } from "zod";
 import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -80,11 +81,19 @@ export default function ClientPage() {
 
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
+    const router = useRouter();
 
-    // Para preview ao vivo e contador de caracteres
+    // Para contador de caracteres
     const watchedDescription = form.watch("description");
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+    React.useEffect(() => {
+        if (selectedGroup?.role !== "ADMIN") {
+            toast.error("Apenas administradores do grupo podem criar itens.", { closeButton: true });
+            router.push("/itens");
+        }
+    });
 
     async function formSubmit(values: FormValues) {
         if (!isAuthenticated) {

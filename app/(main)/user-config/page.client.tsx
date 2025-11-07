@@ -131,9 +131,9 @@ export default function ClientPage() {
             <div className="bg-background min-h-screen">
                 {!isAuthenticated ? (
                     <div className="flex items-center justify-center py-16 sm:py-24">
-                        <div className="flex flex-col items-center gap-2 sm:gap-3">
-                            <Spinner className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
-                            <span className="text-xs sm:text-sm text-muted-foreground">Carregando...</span>
+                        <div className="flex flex-row items-center gap-2 sm:gap-3">
+                            <Spinner className="size-6 sm:size-8 text-primary" />
+                            <span className="text-sm sm:text-base text-muted-foreground">Carregando...</span>
                         </div>
                     </div>
                 ) : (

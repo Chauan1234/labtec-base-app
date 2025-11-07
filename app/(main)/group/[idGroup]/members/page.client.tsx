@@ -172,7 +172,7 @@ export default function ClientPage() {
     React.useEffect(() => {
         if (!selectedGroup) return;
         if (!isAuthenticated) {
-            router.push("/dashboard");
+            router.push("/");
             return;
         }
     }, [selectedGroup, isAuthenticated, router]);

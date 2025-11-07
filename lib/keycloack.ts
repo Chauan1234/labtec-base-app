@@ -23,7 +23,7 @@ export class KeycloakService {
 	async init() {
 		const kc = KeycloakSingleton.getInstance();
 		const options: KeycloakInitOptions = {
-			redirectUri: "http://localhost:3000/dev/apps/dashboard",
+			redirectUri: "http://localhost:3000/dev/apps",
 			onLoad: "check-sso" as KeycloakOnLoad,
 			silentCheckSsoRedirectUri:
 				typeof window !== "undefined"

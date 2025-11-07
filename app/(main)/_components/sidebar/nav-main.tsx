@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 // UI
 import { LucideIcon } from "lucide-react";
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../../../../components/ui/sidebar";
 
 export function NavMain({
     items,

@@ -1,15 +1,19 @@
-"use client";
+import { ChartAreaInteractive } from "./(main)/_components/dashboard/chart-area"
+import { SectionCards } from "./(main)/_components/dashboard/section-cards"
 
-import { useAuth } from "@/contexts/AuthContext";
 
-export default function Home() {
-  const { isAuthenticated, token, email, username, logout } = useAuth();
-  console.log({ isAuthenticated, token, email, username });
-  
-  return (
-    <>
-      <span>Carregando...</span>
-      <button onClick={logout}>Logout</button>
-    </>
-  );
+export const metadata = {
+    title: "Dashboard",
+    description: "Página inicial do sistema.",
+}
+
+export default function PageDashboard() {
+
+    return (
+        <div className="@container/main flex flex-col gap-4 md:gap-6">
+            <SectionCards />
+
+            <ChartAreaInteractive />
+        </div>
+    )
 }

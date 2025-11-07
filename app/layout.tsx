@@ -1,6 +1,6 @@
 // Components
-import AppHeader from "@/components/layout/header/header";
-import AppSidebar from "@/components/layout/sidebar/app-sidebar";
+import AppHeader from "@/app/(main)/_components/header/header";
+import AppSidebar from "@/app/(main)/_components/sidebar/app-sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import Providers from "./providers";

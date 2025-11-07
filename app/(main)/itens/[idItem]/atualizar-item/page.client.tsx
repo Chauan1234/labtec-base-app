@@ -58,11 +58,6 @@ const baseSchema = z.object({
 });
 
 export default function ClientPage() {
-    const router = useRouter();
-
-    const params = useParams();
-    const idItem = Array.isArray(params.idItem) ? params.idItem[0] : params.idItem;
-
     type FormValues = z.input<typeof baseSchema>;
 
     const form = useForm<FormValues>({
@@ -78,6 +73,10 @@ export default function ClientPage() {
 
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
+    const router = useRouter();
+    const params = useParams();
+
+    const idItem = Array.isArray(params.idItem) ? params.idItem[0] : params.idItem;
 
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
@@ -87,6 +86,11 @@ export default function ClientPage() {
             if (!selectedGroup || !idItem) {
                 setLoading(false);
                 return;
+            }
+            if (selectedGroup?.role !== "ADMIN") {
+                setLoading(false);
+                toast.error("Apenas administradores do grupo podem editar itens.", { closeButton: true });
+                router.push("/itens");
             }
             setLoading(true);
 

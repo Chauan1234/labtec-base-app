@@ -4,7 +4,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Package from '../../../package.json';
+import Package from '../../../../package.json';
 
 // Components
 import NovoGrupoModal from "@/app/(main)/group/_components/create-group/novo-grupo-modal";
@@ -83,7 +83,7 @@ export function NavHeader({
             {/* Logo */}
             <SidebarMenu>
                 <SidebarMenuButton asChild className="transition-all duration-200">
-                    <Link href="/dashboard" className="h-auto w-auto">
+                    <Link href="/" className="h-auto w-auto">
                         {state === "collapsed" ? (
                             <Image src={LogoLabtec.src} alt="Logo Labtec" width={40} height={40} />
                         ) : (

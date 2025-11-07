@@ -1,0 +1,10 @@
+export default function () {
+    return (
+        <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+                <h1 className="text-2xl font-bold mb-4">404 - Página não encontrada</h1>
+                <p className="text-sm text-muted-foreground">A página que você está procurando não existe.</p>
+            </div>
+        </div>
+    );
+}

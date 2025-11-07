@@ -5,22 +5,22 @@ import React from "react";
 import { useEffect } from "react";
 
 // Components
-import { NavMain } from "@/components/layout/sidebar/nav-main";
-import { NavHeader } from "@/components/layout/sidebar/nav-header";
+import { NavMain } from "@/app/(main)/_components/sidebar/nav-main";
+import { NavHeader } from "@/app/(main)/_components/sidebar/nav-header";
 
 // Contexts e Libs
 import { useGroup } from "@/contexts/GroupContext";
 
 // UI Components
 import { LayoutDashboardIcon, TableOfContentsIcon } from "lucide-react";
-import { Sidebar, SidebarContent, SidebarHeader} from "../../ui/sidebar";
+import { Sidebar, SidebarContent, SidebarHeader} from "../../../../components/ui/sidebar";
 
 // Dados estáticos para popular o sidebar
 const data = {
     NavMain: [
         {
             title: "Home",
-            url: "/dashboard",
+            url: "/",
             icon: LayoutDashboardIcon,
         },
         {
