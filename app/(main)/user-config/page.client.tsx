@@ -294,7 +294,7 @@ export default function ClientPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between gap-2">
                                     <div className="space-y-0.5">
                                         <Label htmlFor="dark-mode">Tema</Label>
                                         <p className="text-sm text-muted-foreground">
