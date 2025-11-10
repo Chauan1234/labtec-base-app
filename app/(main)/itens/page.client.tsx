@@ -16,6 +16,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    Row,
     useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -47,9 +48,9 @@ import clsx from "clsx";
 export default function ClientPage() {
     const { isAuthenticated, token } = useAuth();
     const { selectedGroup } = useGroup();
-    const [data, setData] = React.useState<any[]>([]);
+    const [data, setData] = React.useState<Items[]>([]);
     const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState<string | null>(null);
+    const [, setError] = React.useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = React.useState(false);
     const [itemToDelete, setItemToDelete] = React.useState<Items | null>(null);
 
@@ -58,7 +59,7 @@ export default function ClientPage() {
     const [searchInput, setSearchInput] = React.useState<string>("");
     const [debouncedSearch] = useDebounce(searchInput, 300);
     const [dateRange, setDateRange] = React.useState<{ from?: Date; to?: Date } | undefined>(undefined);
-    const [open, setOpen] = React.useState(false);
+    const [, setOpen] = React.useState(false);
 
     const router = useRouter();
     const pathname = usePathname();
@@ -102,7 +103,7 @@ export default function ClientPage() {
     // filtra por intervalo de datas antes de passar para a tabela
     const dataFilteredByDate = React.useMemo(() => {
         if (!dateRange || (!dateRange.from && !dateRange.to)) return data;
-        return data.filter((item: any) => {
+        return data.filter((item: Items) => {
             const val = item?.updatedAt ?? item?.createdAt ?? null;
             if (!val) return false;
             const rowDate = new Date(val);
@@ -127,7 +128,7 @@ export default function ClientPage() {
     }, [data, dateRange]);
 
     // global filter (procurar por campos comuns)
-    const globalFilterFn = React.useCallback((row: any, _columnId: any, filterValue: any) => {
+    const globalFilterFn = React.useCallback((row: Row<Items>, _columnId: string, filterValue: unknown) => {
         if (!filterValue) return true;
         const search = String(filterValue).toLowerCase();
         const fields = ["name", "description", "amount", "creator"];
@@ -147,9 +148,10 @@ export default function ClientPage() {
                 const res = await getItems(selectedGroup.idGroup ?? String(selectedGroup.nameGroup), token);
                 if (!mounted) return;
                 setData(res ?? []);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 if (!mounted) return;
-                setError(err?.message ?? String(err));
+                const message = err instanceof Error ? err.message : String(err);
+                setError(message);
             } finally {
                 if (!mounted) return;
                 setLoading(false);
@@ -450,7 +452,7 @@ export default function ClientPage() {
                     if (!open) setItemToDelete(null);
                 }}
                 onDeleted={(id) => {
-                    setData((prev) => prev.filter((it: any) => it.idItem !== id));
+                    setData((prev: Items[]) => prev.filter((it: Items) => it.idItem !== id));
                 }}
             />
         </div>

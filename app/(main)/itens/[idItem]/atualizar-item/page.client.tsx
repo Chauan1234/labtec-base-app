@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -17,6 +17,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/card";
+import { Items } from "../../_components/data-table/columns-item";
 
 const baseSchema = z.object({
     name: z.string()
@@ -96,7 +97,7 @@ export default function ClientPage() {
 
             try {
                 const items = await getItems(selectedGroup.idGroup, token);
-                const item = Array.isArray(items) ? items.find((i: any) => i.idItem === idItem) : null;
+                const item = Array.isArray(items) ? items.find((i: Items) => i.idItem === idItem) : null;
 
                 if (item) {
                     form.reset({
@@ -117,7 +118,7 @@ export default function ClientPage() {
             }
         }
         loadItem();
-    }, [idItem, selectedGroup, token]);
+    }, [idItem, selectedGroup, token, router, form]);
 
     React.useEffect(() => {
         if (!isAuthenticated) {
@@ -133,7 +134,7 @@ export default function ClientPage() {
             router.push("/itens");
         }
 
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, router, selectedGroup]);
 
     async function formSubmit(data: FormValues) {
         if (!isAuthenticated || !selectedGroup || !idItem || selectedGroup?.role !== 'ADMIN') return;
@@ -187,7 +188,11 @@ export default function ClientPage() {
                                             <FormItem>
                                                 <FormLabel>Nome do item</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Nome do item" {...field} />
+                                                    <Input
+                                                        placeholder="Nome do item"
+                                                        maxLength={100}
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

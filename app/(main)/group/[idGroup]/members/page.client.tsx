@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MailPlusIcon, SearchIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 import InviteModal from "../../_components/manage-groups/admin/invite-member-modal";
+import RemoveMemberModal from "../../_components/manage-groups/admin/remove-member-modal";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
@@ -23,8 +24,8 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
+import type { Row } from "@tanstack/react-table";
 import clsx from "clsx";
-//Quero ir pra casa não aguento mais tá aqui
 
 export default function ClientPage() {
     const { isAuthenticated, token, firstName, lastName } = useAuth();
@@ -36,6 +37,8 @@ export default function ClientPage() {
     const [members, setMembers] = React.useState<Users[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [invite, setInvite] = React.useState(false);
+    const [removeMember, setRemoveMember] = React.useState(false);
+    const [selectedUserName, setSelectedUserName] = React.useState<string | null>(null);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [roleFilter, setRoleFilter] = React.useState<string>("all");
 
@@ -55,7 +58,7 @@ export default function ClientPage() {
             setRoleFilter(role);
             hasInitialized.current = true;
         }
-    }, []);
+    }, [searchParams]);
 
     // Atualizar URL quando os filtros mudarem
     React.useEffect(() => {
@@ -71,7 +74,7 @@ export default function ClientPage() {
     }, [debouncedSearch, roleFilter, pathname, router]);
 
     // Filtro global que busca por nome e email
-    const globalFilterFn = React.useCallback((row: any, _columnId: any, filterValue: any) => {
+    const globalFilterFn = React.useCallback((row: Row<Users>, _columnId: string, filterValue: unknown) => {
         if (!filterValue) return true;
 
         const search = String(filterValue).toLowerCase();
@@ -87,6 +90,20 @@ export default function ClientPage() {
         return members.filter(m => m.role === roleFilter.toUpperCase());
     }, [members, roleFilter]);
 
+    // Função para carregar membros do grupo
+    const loadMembers = React.useCallback(async () => {
+        if (!selectedGroup || !isAuthenticated) return;
+        setLoading(true);
+        try {
+            const res = await usersInGroup(selectedGroup.idGroup, token);
+            setMembers(res ?? []);
+        } catch (error) {
+            console.error("Erro ao carregar membros:", error);
+            toast.error("Erro ao carregar membros.", { closeButton: true });
+        } finally {
+            setLoading(false);
+        }
+    }, [selectedGroup, isAuthenticated, token]);
 
     // Função para alterar a função do usuário
     const handleAlterRole = React.useCallback(async (u: Users) => {
@@ -120,12 +137,18 @@ export default function ClientPage() {
             // Reverter para o estado anterior em caso de erro
             setMembers(prevMembers);
         }
-    }, [selectedGroup, isAuthenticated, members, token, firstName, lastName]);
+    }, [selectedGroup, isAuthenticated, members, token, firstName, lastName, loadMembers]);
 
     // Definir colunas usando buildColumnsManageMembers
     const columns = React.useMemo(() => {
         const base = buildColumnsManageMembers(
-            { onToggleRole: handleAlterRole },
+            {
+                onToggleRole: handleAlterRole,
+                onRemoveMember: (u: Users) => {
+                    setSelectedUserName(u.username ?? u.name);
+                    setRemoveMember(true);
+                },
+            },
             selectedGroup?.role
         );
 
@@ -149,25 +172,6 @@ export default function ClientPage() {
             globalFilter: debouncedSearch,
         },
     });
-
-    async function loadMembers() {
-        if (!selectedGroup) {
-            setMembers([]);
-            return;
-        }
-
-        setLoading(true);
-        try {
-            const data = await usersInGroup(selectedGroup.idGroup, token);
-            setMembers(Array.isArray(data) ? data : []);
-        } catch (err) {
-            console.error("Erro ao carregar membros do grupo:", err);
-            toast.error("Erro ao carregar membros do grupo.", { closeButton: true });
-            setMembers([]);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     React.useEffect(() => {
         if (!selectedGroup) return;
@@ -255,7 +259,7 @@ export default function ClientPage() {
                         }
                         {members.length === 1 ? ' membro' : ' membros'}
                     </div>
-                    
+
                     {selectedGroup?.role === 'ADMIN' && (
                         <Button
                             variant="outline"
@@ -398,6 +402,11 @@ export default function ClientPage() {
             </div>
 
             <InviteModal open={invite} onOpenChange={setInvite} userRole={selectedGroup?.role} />
+            <RemoveMemberModal
+                open={removeMember}
+                onOpenChange={setRemoveMember}
+                userName={selectedUserName ?? ""}
+            />
         </div>
     );
 }

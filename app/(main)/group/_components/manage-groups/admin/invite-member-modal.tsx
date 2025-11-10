@@ -34,7 +34,7 @@ export default function InviteModal({ open, onOpenChange, userRole }: InviteModa
             role: 'USER'
         }
     })
-    
+
     const [submitting, setSubmitting] = React.useState(false);
 
     async function onSubmit(data: FormValues) {
@@ -42,7 +42,7 @@ export default function InviteModal({ open, onOpenChange, userRole }: InviteModa
             toast.error("Você não tem permissão para convidar membros.", { closeButton: true });
             return;
         }
-        
+
         try {
             setSubmitting(true);
             // chamada para enviar o convite
@@ -58,11 +58,8 @@ export default function InviteModal({ open, onOpenChange, userRole }: InviteModa
             setSubmitting(false);
         }
     }
-    
+
     React.useEffect(() => {
-        if (!open) {
-            form.clearErrors();
-        }
         if (open && userRole !== 'ADMIN') {
             onOpenChange?.(false);
         }
@@ -128,6 +125,7 @@ export default function InviteModal({ open, onOpenChange, userRole }: InviteModa
                         </FieldGroup>
                         <DialogFooter>
                             <Button
+                                type="button"
                                 variant="outline"
                                 onClick={() => onOpenChange?.(false)}
                             >

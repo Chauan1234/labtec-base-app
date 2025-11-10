@@ -65,12 +65,12 @@ export function NavHeader({
 }) {
     // hooks
     const { firstName, lastName } = useAuth();
-    const { state, isMobile } = useSidebar();
+    const { state } = useSidebar();
     const { selectedGroup, setSelectedGroup } = useGroup();
 
     // estados para controlar o popover
     const [open, setOpen] = React.useState(false);
-    const [value, setValue] = React.useState("");
+    const [value] = React.useState("");
 
     // estados para controlar os modais
     const [showCriarGrupo, setShowCriarGrupo] = React.useState(false);

@@ -15,6 +15,7 @@ export function NavMain({
         icon: LucideIcon
     }[]
 }) {
+    const pathname = usePathname();
     return (
         <SidebarGroup>
             <SidebarGroupLabel>
@@ -27,7 +28,7 @@ export function NavMain({
                             <Link
                                 href={item.url}
                                 className={`transition-all duration-300 
-                                ${usePathname() === item.url ? "bg-secondary/20 text-primary hover:!bg-secondary/20 cursor-default" : "hover:gap-3"}
+                                ${pathname === item.url ? "bg-secondary/20 text-primary hover:!bg-secondary/20 cursor-default" : "hover:gap-3"}
                                     `}
                             >
                                 <item.icon />

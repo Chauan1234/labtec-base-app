@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
+import { FieldDescription, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import {
     Form,
     FormControl,
@@ -157,7 +157,11 @@ export default function ClientPage() {
                                             <FormItem>
                                                 <FormLabel>Nome do item</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Digite o nome do item" maxLength={100} {...field} />
+                                                    <Input
+                                                        placeholder="Digite o nome do item"
+                                                        maxLength={100}
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

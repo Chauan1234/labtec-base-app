@@ -72,6 +72,7 @@ export default function NovoGrupoModal({ open, onOpenChange }: NovoGrupoModalPro
                     console.error("Erro ao atualizar grupos após criar novo grupo:", error);
                 }
             } catch (error) {
+                console.error("Erro ao criar grupo:", error);
                 toast.error('Erro ao criar grupo.');
             } finally {
                 setIsSubmitting(false);

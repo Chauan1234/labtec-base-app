@@ -1,6 +1,9 @@
 // React
 import React from "react";
 
+// Contexts
+import { useGroup } from "@/contexts/GroupContext";
+
 // UI Components
 import { Button } from '../../../../../../components/ui/button';
 import { CircleAlertIcon } from 'lucide-react';
@@ -16,10 +19,17 @@ import {
 interface SairGrupoModalProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    userName?: string;
 }
 
-export default function SairGrupoModal({ open, onOpenChange }: SairGrupoModalProps) {
-
+export default function RemoveMemberModal({ open, onOpenChange, userName }: SairGrupoModalProps) {
+    const { selectedGroup } = useGroup();
+    
+    React.useEffect(() => {
+        if (selectedGroup?.role !== 'ADMIN') {
+            onOpenChange?.(false);
+        }
+    })
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
@@ -32,11 +42,11 @@ export default function SairGrupoModal({ open, onOpenChange }: SairGrupoModalPro
 
                     <div className="p-6 flex-1">
                         <DialogHeader className="p-0 mb-1">
-                            <DialogTitle className="text-lg font-semibold">Sair do Grupo</DialogTitle>
+                            <DialogTitle className="text-lg font-semibold">Remover do Grupo</DialogTitle>
                         </DialogHeader>
                         <div className="text-sm text-muted-foreground mb-4">
                             <DialogDescription>
-                                Tem certeza que deseja sair do grupo? Você só poderá entrar novamente se tiver um link de convite.
+                                Tem certeza que deseja remover <span className="font-medium">{userName}</span> do grupo? Esta ação não pode ser desfeita.
                             </DialogDescription>
                         </div>
 
@@ -57,12 +67,12 @@ export default function SairGrupoModal({ open, onOpenChange }: SairGrupoModalPro
                                     // Lógica para sair do grupo
                                 }}
                             >
-                                Sair
+                                Remover
                             </Button>
                         </div>
                     </div>
                 </div>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

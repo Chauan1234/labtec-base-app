@@ -37,7 +37,7 @@ export default function AppSidebar() {
     // seta o grupo inicial baseado nos groups carregados
     useEffect(() => {
         if (!selectedGroup && groups && groups.length > 0) setSelectedGroup(groups[0]);
-    }, [groups]);
+    }, [groups, selectedGroup, setSelectedGroup]);
 
     return (
         <Sidebar variant="inset" collapsible="icon">

@@ -25,7 +25,7 @@ export default function ExcluirGrupoModal({ open, onOpenChange }: ExcluirGrupoMo
         if (!open) {
             setConfirmText('');
         }
-    })
+    }, [open]);
 
     function handleExcluir() {
         onOpenChange?.(false);

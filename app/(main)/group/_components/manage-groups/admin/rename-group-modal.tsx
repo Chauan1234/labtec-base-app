@@ -3,7 +3,7 @@ import React from 'react';
 
 // UI Components
 import { Button } from '../../../../../../components/ui/button';
-import { CircleAlertIcon, EditIcon } from 'lucide-react';
+import { EditIcon } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -13,7 +13,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import z from 'zod';
 import { useForm } from 'react-hook-form';
@@ -67,7 +66,7 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
         } else {
             form.clearErrors();
         }
-    }, [open, selectedGroup, form, onOpenChange])
+    }, [open, selectedGroup, form, onOpenChange, firstName, lastName]);
 
     async function alterarNomeGrupo(data: FormValues) {
         if (open) {
@@ -149,6 +148,7 @@ export default function RenomearGrupoModal({ open, onOpenChange }: RenomearGrupo
                                 />
                                 <DialogFooter className="justify-end gap-2">
                                     <Button
+                                        type='button'
                                         variant="outline"
                                         onClick={() => onOpenChange?.(false)}
                                     >

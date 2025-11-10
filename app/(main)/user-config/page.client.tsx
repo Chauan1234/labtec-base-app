@@ -27,7 +27,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import ThemeSwitcher from './_components/theme-switcher';
 
@@ -71,8 +70,6 @@ export default function ClientPage() {
     const { email, username, firstName, lastName, isAuthenticated } = useAuth();
 
     // Estados e funções para o diálogo de confirmação de logout
-    const [cropOpen, setCropOpen] = useState(false);
-    const [tempImage, setTempImage] = useState<string | null>(null);
 
     const [loading, setLoading] = useState(false);
 
@@ -102,7 +99,7 @@ export default function ClientPage() {
             }
         }
         loadUserData();
-    }, [isAuthenticated, email, username, firstName, lastName]);
+    }, [isAuthenticated, email, username, firstName, lastName, form, router]);
 
     // Estado para imagem de perfil (local)
     const [profilePicture, setProfilePicture] = useState<string | null>(() => {
@@ -111,19 +108,6 @@ export default function ClientPage() {
         }
         return null;
     });
-
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = reader.result as string;
-                setTempImage(result);
-                setCropOpen(true);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
 
     return (
         <>
@@ -183,7 +167,6 @@ export default function ClientPage() {
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={handleImageUpload}
                                             className="hidden"
                                         />
                                     </label>
@@ -276,6 +259,7 @@ export default function ClientPage() {
                                 <Button
                                     variant="default"
                                     size="sm"
+                                    disabled={loading}
                                 >
                                     Salvar Alterações
                                 </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { MoreHorizontalIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export function ItensActions({
     row,
     onDelete,
 }: {
-    row: any,
+    row: Row<Items>,
     onDelete: (item: Items) => void,
 }) {
     const { selectedGroup } = useGroup();
@@ -118,8 +118,8 @@ export function buildColumns(onDelete?: (item: Items) => void): ColumnDef<Items>
             id: 'actions',
             cell: ({ row }) => (
                 <ItensActions 
-                    row={row} 
-                    onDelete={() => onDelete?.(row.original as Items)}
+                    row={row as Row<Items>} 
+                    onDelete={() => onDelete?.(row.original)}
                 />
             ),
         },

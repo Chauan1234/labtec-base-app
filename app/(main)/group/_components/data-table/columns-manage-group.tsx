@@ -24,10 +24,12 @@ export type Users = {
 export function MemberActions({
     user,
     onToggleRole,
+    onRemoveMember,
     disabled,
 }: {
     user: Users;
     onToggleRole?: (user: Users) => void;
+    onRemoveMember?: (user: Users) => void;
     disabled?: boolean;
 }) {
     const { firstName, lastName } = useAuth();
@@ -75,7 +77,7 @@ export function MemberActions({
                         Promover a admin
                     </DropdownMenuItem>
                 )}
-                <DropdownMenuItem variant="destructive" onClick={() => !finalDisabled && onToggleRole?.(user)}>
+                <DropdownMenuItem variant="destructive" onClick={() => !finalDisabled && onRemoveMember?.(user)}>
                     <LogOutIcon className="size-4" />
                     Remover do grupo
                 </DropdownMenuItem>
@@ -87,6 +89,7 @@ export function MemberActions({
 export function buildColumnsManageMembers(
     handlers?: {
         onToggleRole?: (user: Users) => void;
+        onRemoveMember?: (user: Users) => void;
     },
     selectedGroupRole?: 'ADMIN' | 'USER'
 ): ColumnDef<Users>[] {
@@ -125,6 +128,7 @@ export function buildColumnsManageMembers(
                 <MemberActions
                     user={row.original}
                     onToggleRole={handlers?.onToggleRole}
+                    onRemoveMember={handlers?.onRemoveMember}
                 />
             )
         })

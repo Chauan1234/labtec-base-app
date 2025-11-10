@@ -1,13 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
 import { CircleAlertIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGroup } from "@/contexts/GroupContext";
@@ -90,37 +82,5 @@ export default function DeleteItemModal({ open, onOpenChange, idItem, onDeleted 
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-        // <Dialog open={open} onOpenChange={onOpenChange}>
-        //     <DialogContent className="gap-0 sm:max-w-[360px]">
-        //         <DialogHeader className="mb-2 gap-0">
-        //             <DialogTitle className="flex items-center gap-1">
-        //                 <CircleAlertIcon className="size-5 text-destructive" />
-        //                 <span>Excluir item</span>
-        //             </DialogTitle>
-        //             <DialogDescription className="text-sm text-muted-foreground mt-1">
-        //                 <span>Tem certeza que deseja excluir este item?</span>
-        //             </DialogDescription>
-        //         </DialogHeader>
-        //         <DialogFooter className="gap-2">
-        //             <Button
-        //                 variant="outline"
-        //                 size="sm"
-        //                 className="cursor-pointer"
-        //                 onClick={() => onOpenChange?.(false)}
-        //             >
-        //                 Cancelar
-        //             </Button>
-        //             <Button
-        //                 variant="logout"
-        //                 size="sm"
-        //                 className="cursor-pointer"
-        //                 onClick={handleExcluirItem}
-        //                 disabled={deleting}
-        //             >
-        //                 {deleting ? 'Excluindo...' : 'Excluir'}
-        //             </Button>
-        //         </DialogFooter>
-        //     </DialogContent>
-        // </Dialog>
     );
 }
